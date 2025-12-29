@@ -8,6 +8,6 @@ package ui.viewmodel;
  *
  * @author tobias
  */
-public class ViewModel {
+public class ClienteViewModel {
     
 }
