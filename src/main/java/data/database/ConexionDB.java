@@ -17,6 +17,8 @@ public class ConexionDB {
     String USER = "alumno";
     String PWD = "alumno";
     
+    public ConexionDB(){}
+    
     public Connection connectDataBase() throws SQLException {
         Connection connection = DriverManager.getConnection(URL, USER, PWD);
         return connection;

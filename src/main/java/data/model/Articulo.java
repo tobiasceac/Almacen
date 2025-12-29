@@ -2,19 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package data.dao;
-
-import data.database.ConexionDB;
+package data.model;
 
 /**
  *
  * @author tobias
  */
-public class ClienteDAO {
-    
-    ConexionDB conn;
-    
-    public void altaCliente(){}
-    
+public class Articulo {
     
 }

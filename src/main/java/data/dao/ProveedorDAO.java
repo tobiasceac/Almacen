@@ -4,17 +4,10 @@
  */
 package data.dao;
 
-import data.database.ConexionDB;
-
 /**
  *
  * @author tobias
  */
-public class ClienteDAO {
-    
-    ConexionDB conn;
-    
-    public void altaCliente(){}
-    
+public class ProveedorDAO {
     
 }
