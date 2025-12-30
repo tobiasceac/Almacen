@@ -23,6 +23,7 @@ public class FormCliente extends javax.swing.JFrame {
         
         setLocationRelativeTo(null); // Centra la ventana al inizializar
         setResizable(false); // Desactiva el redimensionamiento
+        desactivateAll();
         // Hacer que el campo de letra del DNI no sea editable
         niflText.setEditable(false);
         // Establecer el color de fondo para indicar que no es editable
