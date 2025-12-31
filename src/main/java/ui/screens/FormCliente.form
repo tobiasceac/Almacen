@@ -11,29 +11,38 @@
             <Property name="text" type="java.lang.String" value="Mantenimiento"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="altasMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Altas"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="altasMenuActionPerformed"/>
+              </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+            <MenuItem class="javax.swing.JMenuItem" name="bajasMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Bajas"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bajasMenuActionPerformed"/>
+              </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+            <MenuItem class="javax.swing.JMenuItem" name="modificacionesMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Modificaciones"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modificacionesMenuActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
+            <MenuItem class="javax.swing.JMenuItem" name="volverMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Volver"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem4ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="volverMenuActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -43,12 +52,15 @@
             <Property name="text" type="java.lang.String" value="Consultas"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem5">
+            <MenuItem class="javax.swing.JMenuItem" name="porCodigoMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Por c&#xf3;digo"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="porCodigoMenuActionPerformed"/>
+              </Events>
             </MenuItem>
-            <Menu class="javax.swing.JMenu" name="jMenu1">
+            <Menu class="javax.swing.JMenu" name="porCodigoMenuV2">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Listados"/>
               </Properties>
@@ -58,15 +70,21 @@
                     <Property name="text" type="java.lang.String" value="Por c&#xf3;digo"/>
                   </Properties>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
+                <MenuItem class="javax.swing.JMenuItem" name="entreCodigosMenu">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Entre c&#xf3;digos"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="entreCodigosMenuActionPerformed"/>
+                  </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem8">
+                <MenuItem class="javax.swing.JMenuItem" name="graficoMenu">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Gr&#xe1;ficos"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="graficoMenuActionPerformed"/>
+                  </Events>
                 </MenuItem>
               </SubComponents>
             </Menu>
@@ -320,15 +338,10 @@
     </Component>
     <Component class="javax.swing.JTextField" name="totalText">
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="totalTextActionPerformed"/>
+        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="totalTextCaretUpdate"/>
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="niflText">
-      <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="niflTextCaretUpdate"/>
-        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="niflTextFocusLost"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="niflTextActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="aceptarButton">
       <Properties>

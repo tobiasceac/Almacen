@@ -13,11 +13,13 @@ import java.sql.SQLException;
  * @author tobias
  */
 public class ConexionDB {
-    public String URL = "jdbc:postgresql://localhost:5432/aprendizaje";
+    public String URL = "jdbc:postgresql://localhost:5432/aprendizaje?currentSchema=almacen";
     String USER = "alumno";
     String PWD = "alumno";
     
-    public ConexionDB(){}
+    public ConexionDB(){
+       
+    }
     
     public Connection connectDataBase() throws SQLException {
         Connection connection = DriverManager.getConnection(URL, USER, PWD);

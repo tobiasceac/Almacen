@@ -5,7 +5,10 @@
 package ui.screens;
 
 import java.awt.Color;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import ui.viewmodel.ClienteViewModel;
 
 /**
  *
@@ -14,16 +17,20 @@ import java.util.ArrayList;
 public class FormCliente extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormCliente.class.getName());
-
+    
+    private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO, ENTRECODIGOS, GRAFICOS};
+    private Modo modo;
+    private String nifCompleto;
     /**
      * Creates new form Formulario
      */
     public FormCliente() {
         initComponents();
         
+        
+        desactivateAll();
         setLocationRelativeTo(null); // Centra la ventana al inizializar
         setResizable(false); // Desactiva el redimensionamiento
-        desactivateAll();
         // Hacer que el campo de letra del DNI no sea editable
         niflText.setEditable(false);
         // Establecer el color de fondo para indicar que no es editable
@@ -38,7 +45,7 @@ public class FormCliente extends javax.swing.JFrame {
         nifnText.setEnabled(false);
         nombreText.setEnabled(false);
         apellidosText.setEnabled(false);
-        domicilioText.setEnabled(false);
+        domicilioText.setEnabled(false); 
         cpText.setEnabled(false);
         localidadText.setEnabled(false);
         telefonoText.setEnabled(false);
@@ -50,6 +57,38 @@ public class FormCliente extends javax.swing.JFrame {
         cancelButton.setEnabled(false);
         salirButton.setEnabled(false);
     }
+    
+    public void activateAll(){
+        codigoText.setEnabled(true);
+        nifnText.setEnabled(true);
+        nombreText.setEnabled(true);
+        apellidosText.setEnabled(true);
+        domicilioText.setEnabled(true); 
+        cpText.setEnabled(true);
+        localidadText.setEnabled(true);
+        telefonoText.setEnabled(true);
+        movilText.setEnabled(true);
+        faxText.setEnabled(true);
+        emailText.setEnabled(true);
+        totalText.setEnabled(true);
+        aceptarButton.setEnabled(true);
+        cancelButton.setEnabled(true);
+        salirButton.setEnabled(true);
+    }
+    
+    // Habilita los campos necesarios para las bases de datos
+    public void modoForm(){
+        codigoText.setEnabled(true);
+        aceptarButton.setEnabled(true);
+        cancelButton.setEnabled(true);
+        salirButton.setEnabled(true);
+    }
+
+
+
+
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -91,17 +130,17 @@ public class FormCliente extends javax.swing.JFrame {
         salirButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        altasMenu = new javax.swing.JMenuItem();
+        bajasMenu = new javax.swing.JMenuItem();
+        modificacionesMenu = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        volverMenu = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        porCodigoMenu = new javax.swing.JMenuItem();
+        porCodigoMenuV2 = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
+        entreCodigosMenu = new javax.swing.JMenuItem();
+        graficoMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Prueba de entrada de datos");
@@ -222,25 +261,9 @@ public class FormCliente extends javax.swing.JFrame {
             }
         });
 
-        totalText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                totalTextActionPerformed(evt);
-            }
-        });
-
-        niflText.addCaretListener(new javax.swing.event.CaretListener() {
+        totalText.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                niflTextCaretUpdate(evt);
-            }
-        });
-        niflText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                niflTextFocusLost(evt);
-            }
-        });
-        niflText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                niflTextActionPerformed(evt);
+                totalTextCaretUpdate(evt);
             }
         });
 
@@ -291,43 +314,73 @@ public class FormCliente extends javax.swing.JFrame {
 
         jMenu2.setText("Mantenimiento");
 
-        jMenuItem1.setText("Altas");
-        jMenu2.add(jMenuItem1);
-
-        jMenuItem2.setText("Bajas");
-        jMenu2.add(jMenuItem2);
-
-        jMenuItem3.setText("Modificaciones");
-        jMenu2.add(jMenuItem3);
-        jMenu2.add(jSeparator2);
-
-        jMenuItem4.setText("Volver");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+        altasMenu.setText("Altas");
+        altasMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4ActionPerformed(evt);
+                altasMenuActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem4);
+        jMenu2.add(altasMenu);
+
+        bajasMenu.setText("Bajas");
+        bajasMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bajasMenuActionPerformed(evt);
+            }
+        });
+        jMenu2.add(bajasMenu);
+
+        modificacionesMenu.setText("Modificaciones");
+        modificacionesMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modificacionesMenuActionPerformed(evt);
+            }
+        });
+        jMenu2.add(modificacionesMenu);
+        jMenu2.add(jSeparator2);
+
+        volverMenu.setText("Volver");
+        volverMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                volverMenuActionPerformed(evt);
+            }
+        });
+        jMenu2.add(volverMenu);
 
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Consultas");
 
-        jMenuItem5.setText("Por código");
-        jMenu3.add(jMenuItem5);
+        porCodigoMenu.setText("Por código");
+        porCodigoMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                porCodigoMenuActionPerformed(evt);
+            }
+        });
+        jMenu3.add(porCodigoMenu);
 
-        jMenu1.setText("Listados");
+        porCodigoMenuV2.setText("Listados");
 
         jMenuItem6.setText("Por código");
-        jMenu1.add(jMenuItem6);
+        porCodigoMenuV2.add(jMenuItem6);
 
-        jMenuItem7.setText("Entre códigos");
-        jMenu1.add(jMenuItem7);
+        entreCodigosMenu.setText("Entre códigos");
+        entreCodigosMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                entreCodigosMenuActionPerformed(evt);
+            }
+        });
+        porCodigoMenuV2.add(entreCodigosMenu);
 
-        jMenuItem8.setText("Gráficos");
-        jMenu1.add(jMenuItem8);
+        graficoMenu.setText("Gráficos");
+        graficoMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                graficoMenuActionPerformed(evt);
+            }
+        });
+        porCodigoMenuV2.add(graficoMenu);
 
-        jMenu3.add(jMenu1);
+        jMenu3.add(porCodigoMenuV2);
 
         jMenuBar1.add(jMenu3);
 
@@ -504,10 +557,6 @@ public class FormCliente extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_emailTextActionPerformed
 
-    private void niflTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_niflTextActionPerformed
- 
-    }//GEN-LAST:event_niflTextActionPerformed
-
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
         reset();
@@ -524,8 +573,6 @@ public class FormCliente extends javax.swing.JFrame {
         if (!(numCheck(nifnText.getText()))){
             errores.add("DNI");
         }
-        
-       
         if (!(nameCheck(nombreText.getText()))) {
             errores.add("Nombre");
         }
@@ -550,8 +597,7 @@ public class FormCliente extends javax.swing.JFrame {
         if (!(emailCheck(emailText.getText()))) {
             errores.add("email");
         }
-        
-        
+
         
         if (errores.size()==1){
             text = "Error en: ";
@@ -566,20 +612,37 @@ public class FormCliente extends javax.swing.JFrame {
         }
         
         
-        if (errores.isEmpty()) {
-            jOptionPane1.showMessageDialog(null, "Formulario Finalizado con Éxito", "Formulario Finalizado", jOptionPane1.INFORMATION_MESSAGE);
-        } else {
+        if (!errores.isEmpty()) {
             jOptionPane1.showMessageDialog(null, text, "Ventana Error", jOptionPane1.YES_OPTION);
+        } 
+        
+        
+        switch(modo) {
+            case ALTA:
+                try {
+                    ClienteViewModel vm = new ClienteViewModel();
+                    vm.altaCLiente(codigoText.getText(), nifnText.getText() + calcularLetraDNI(nifnText.getText()), apellidosText.getText(), nombreText.getText(), domicilioText.getText(), cpText.getText(), localidadText.getText(), telefonoText.getText(), movilText.getText(), faxText.getText(), emailText.getText(), Float.parseFloat(totalText.getText()));
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(
+                        null,                       
+                        "Ha ocurrido un error",     
+                        "Error",                    
+                        JOptionPane.ERROR_MESSAGE );
+                }
+                reset();
+            
+                break;    
         }
         
-        
-        
+        jOptionPane1.showMessageDialog(null, "Formulario Finalizado con Éxito", "Formulario Finalizado", jOptionPane1.INFORMATION_MESSAGE);
+
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
     private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate
         String text = codigoText.getText();
         if (codigoCheck(text)){
             codigoText.setForeground(Color.BLACK);
+            activateAll();
         } else {
             codigoText.setForeground(Color.RED);
         }
@@ -610,7 +673,7 @@ public class FormCliente extends javax.swing.JFrame {
 
     private void apellidosTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_apellidosTextCaretUpdate
         String text = apellidosText.getText();
-        if (nameCheck(text)){
+        if (apellidoCheck(text)){
             apellidosText.setForeground(Color.BLACK);
         } else {
             apellidosText.setForeground(Color.RED);
@@ -671,27 +734,55 @@ public class FormCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_localidadTextCaretUpdate
 
-    private void niflTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_niflTextCaretUpdate
-     
-    }//GEN-LAST:event_niflTextCaretUpdate
-
-    private void niflTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_niflTextFocusLost
-       
-    }//GEN-LAST:event_niflTextFocusLost
-
-    private void totalTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_totalTextActionPerformed
-
     private void salirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirButtonActionPerformed
+        reset();
         desactivateAll();
     }//GEN-LAST:event_salirButtonActionPerformed
 
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+    private void volverMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverMenuActionPerformed
         Menu menu = new Menu();
         menu.setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
+    }//GEN-LAST:event_volverMenuActionPerformed
+
+    private void totalTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_totalTextCaretUpdate
+        String text = totalText.getText();
+        if (esFloat(text)){
+            totalText.setForeground(Color.BLACK);
+        } else {
+            totalText.setForeground(Color.RED);
+        }
+    }//GEN-LAST:event_totalTextCaretUpdate
+
+    private void altasMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_altasMenuActionPerformed
+        modoForm();
+        modo = Modo.ALTA;
+    }//GEN-LAST:event_altasMenuActionPerformed
+
+    private void bajasMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bajasMenuActionPerformed
+        modoForm();
+        modo = Modo.BAJA;
+    }//GEN-LAST:event_bajasMenuActionPerformed
+
+    private void modificacionesMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificacionesMenuActionPerformed
+        modoForm();
+        modo = Modo.MODIFICACIONES;
+    }//GEN-LAST:event_modificacionesMenuActionPerformed
+
+    private void porCodigoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_porCodigoMenuActionPerformed
+        modoForm();
+        modo = Modo.CONSULTAPORCODIGO;  
+    }//GEN-LAST:event_porCodigoMenuActionPerformed
+
+    private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
+       modoForm();
+       modo = Modo.ENTRECODIGOS;  
+    }//GEN-LAST:event_entreCodigosMenuActionPerformed
+
+    private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
+       modoForm();
+       modo = Modo.GRAFICOS;  
+    }//GEN-LAST:event_graficoMenuActionPerformed
 
     /**
      * @param args the command line arguments
@@ -720,7 +811,12 @@ public class FormCliente extends javax.swing.JFrame {
     
     //método para comprobar Nombre y Apellido
     public static boolean nameCheck(String text){
-        return text.matches("[A-Za-z\\s]+"); 
+        return text.matches("[A-Za-z \\s]{1,15}"); 
+    }
+    
+    //método para comprobar Apellido
+    public static boolean apellidoCheck(String text){
+        return text.matches("[A-Za-z \\s]{1,35}"); 
     }
     
     //método para comprobar Teléfono, Móvil, Fax
@@ -728,30 +824,47 @@ public class FormCliente extends javax.swing.JFrame {
         return text.matches("[0-9]{9}");
     }
     
-    //método para comprobar email
+    //método para comprobar Email
     public static boolean emailCheck(String text){
-        return text.matches("^\\S+@\\S+\\.\\S+$");
+        return text.matches("^(?=.{1,20}$)[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
     
-    //metodo para código
+    //metodo para Código
     public static boolean codigoCheck(String text){
-        return text.matches("[0-9]{5}");
+        return text.matches("[0-9]{6}");
     }
     
-    //metodo para comprobar codigo postal
+    //metodo para comprobar Codigo Postal
     public static boolean cpCheck(String text){
         return text.matches("[0-9]{5}");
     }
     
-    //metodo para comprobar DNIN
+    //metodo para comprobar DNI
     public static boolean numCheck(String text){
         return text.matches("[0-9]{8}");
     }
     
-    //método para comprobar DNIl
-    public static boolean letraCheck(String text){
-        return text.matches("[A-Za-z]");
+    //metodo para comprobar Domicilio
+    public static boolean domicilioCheck(String text){
+        return text.matches("[A-Za-z\\s0-9ºª/]{1,40}");
     }
+    
+    public static boolean localidadCheck(String text){
+        return text.matches("[A-Za-z\\s]{1,20}");
+    }
+    
+    public boolean esFloat(String text) {
+    if (text == null) return false;
+
+    try {
+        Float.valueOf(text);
+        return true;
+    } catch (NumberFormatException e) {
+        return false;
+    }
+}
+    
+    
     
     private String calcularLetraDNI(String num) {
         if (num == null || num.isEmpty() || ! numCheck(num)) {
@@ -801,13 +914,17 @@ public class FormCliente extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aceptarButton;
+    private javax.swing.JMenuItem altasMenu;
     private javax.swing.JTextField apellidosText;
+    private javax.swing.JMenuItem bajasMenu;
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField codigoText;
     private javax.swing.JTextField cpText;
     private javax.swing.JTextField domicilioText;
     private javax.swing.JTextField emailText;
+    private javax.swing.JMenuItem entreCodigosMenu;
     private javax.swing.JTextField faxText;
+    private javax.swing.JMenuItem graficoMenu;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -820,27 +937,23 @@ public class FormCliente extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JTextField localidadText;
+    private javax.swing.JMenuItem modificacionesMenu;
     private javax.swing.JTextField movilText;
     private javax.swing.JTextField niflText;
     private javax.swing.JTextField nifnText;
     private javax.swing.JTextField nombreText;
+    private javax.swing.JMenuItem porCodigoMenu;
+    private javax.swing.JMenu porCodigoMenuV2;
     private javax.swing.JButton salirButton;
     private javax.swing.JTextField telefonoText;
     private javax.swing.JTextField totalText;
+    private javax.swing.JMenuItem volverMenu;
     // End of variables declaration//GEN-END:variables
 }

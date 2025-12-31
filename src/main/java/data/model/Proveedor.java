@@ -4,6 +4,8 @@
  */
 package data.model;
 
+import java.util.Objects;
+
 /**
  *
  * @author tobias
@@ -23,18 +25,18 @@ public class Proveedor {
     private float total;
 
     public Proveedor(String codigo, String nif, String apellidos, String nombre, String domicilio, String codigoPostal, String localidad, String telefono, String movil, String fax, String email, float total) {
-        this.codigo = codigo;
-        this.nif = nif;
-        this.apellidos = apellidos;
-        this.nombre = nombre;
-        this.domicilio = domicilio;
-        this.codigoPostal = codigoPostal;
-        this.localidad = localidad;
-        this.telefono = telefono;
-        this.movil = movil;
-        this.fax = fax;
-        this.email = email;
-        this.total = total;
+        setCodigo(codigo);
+        setNif(nif);
+        setApellidos(apellidos);
+        setNombre(nombre);
+        setDomicilio(domicilio);
+        setCodigoPostal(codigoPostal);
+        setLocalidad(localidad);
+        setTelefono(telefono);
+        setMovil(movil);
+        setFax(fax);
+        setEmail(email);
+        setTotal(total);
     }
 
     public String getCodigo() {
@@ -42,7 +44,13 @@ public class Proveedor {
     }
 
     public void setCodigo(String codigo) {
-        this.codigo = codigo;
+        if (codigo == null || codigo.isBlank()) {
+            throw new IllegalArgumentException("El código no puede ser nulo o vacío");
+        }
+        if (codigo. length() > 6) {
+            throw new IllegalArgumentException("El código no puede tener más de 6 caracteres");
+        }
+        this.codigo = codigo. trim();
     }
 
     public String getNif() {
@@ -50,7 +58,16 @@ public class Proveedor {
     }
 
     public void setNif(String nif) {
-        this.nif = nif;
+        if (nif == null || nif.isBlank()) {
+            throw new IllegalArgumentException("El NIF no puede ser nulo o vacío");
+        }
+        if (nif.length() > 9) {
+            throw new IllegalArgumentException("El NIF no puede tener más de 9 caracteres");
+        }
+        if (!nif.matches("^[0-9]{8}[A-Za-z]$")) {
+            throw new IllegalArgumentException("El NIF debe tener 8 dígitos seguidos de una letra");
+        }
+        this.nif = nif.trim().toUpperCase();
     }
 
     public String getApellidos() {
@@ -58,7 +75,16 @@ public class Proveedor {
     }
 
     public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+        if (apellidos == null || apellidos.isBlank()) {
+            throw new IllegalArgumentException("Los apellidos no pueden ser nulos o vacíos");
+        }
+        if (apellidos.length() > 35) {
+            throw new IllegalArgumentException("Los apellidos no pueden tener más de 35 caracteres");
+        }
+        if (!apellidos.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+            throw new IllegalArgumentException("Los apellidos solo pueden contener letras y espacios");
+        }
+        this.apellidos = apellidos.trim();
     }
 
     public String getNombre() {
@@ -66,7 +92,16 @@ public class Proveedor {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre no puede ser nulo o vacío");
+        }
+        if (nombre.length() > 15) {
+            throw new IllegalArgumentException("El nombre no puede tener más de 15 caracteres");
+        }
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+            throw new IllegalArgumentException("El nombre solo puede contener letras y espacios");
+        }
+        this.nombre = nombre.trim();
     }
 
     public String getDomicilio() {
@@ -74,7 +109,13 @@ public class Proveedor {
     }
 
     public void setDomicilio(String domicilio) {
-        this.domicilio = domicilio;
+        if (domicilio == null || domicilio.isBlank()) {
+            throw new IllegalArgumentException("El domicilio no puede ser nulo o vacío");
+        }
+        if (domicilio.length() > 40) {
+            throw new IllegalArgumentException("El domicilio no puede tener más de 40 caracteres");
+        }
+        this. domicilio = domicilio. trim();
     }
 
     public String getCodigoPostal() {
@@ -82,7 +123,16 @@ public class Proveedor {
     }
 
     public void setCodigoPostal(String codigoPostal) {
-        this.codigoPostal = codigoPostal;
+        if (codigoPostal == null || codigoPostal.isBlank()) {
+            throw new IllegalArgumentException("El código postal no puede ser nulo o vacío");
+        }
+        if (codigoPostal. length() > 5) {
+            throw new IllegalArgumentException("El código postal no puede tener más de 5 caracteres");
+        }
+        if (!codigoPostal.matches("^[0-9]{5}$")) {
+            throw new IllegalArgumentException("El código postal debe tener exactamente 5 dígitos");
+        }
+        this.codigoPostal = codigoPostal.trim();
     }
 
     public String getLocalidad() {
@@ -90,7 +140,13 @@ public class Proveedor {
     }
 
     public void setLocalidad(String localidad) {
-        this.localidad = localidad;
+        if (localidad == null || localidad.isBlank()) {
+            throw new IllegalArgumentException("La localidad no puede ser nula o vacía");
+        }
+        if (localidad.length() > 20) {
+            throw new IllegalArgumentException("La localidad no puede tener más de 20 caracteres");
+        }
+        this.localidad = localidad. trim();
     }
 
     public String getTelefono() {
@@ -98,7 +154,16 @@ public class Proveedor {
     }
 
     public void setTelefono(String telefono) {
-        this.telefono = telefono;
+        if (telefono == null || telefono.isBlank()) {
+            throw new IllegalArgumentException("El teléfono no puede ser nulo o vacío");
+        }
+        if (telefono. length() > 9) {
+            throw new IllegalArgumentException("El teléfono no puede tener más de 9 caracteres");
+        }
+        if (!telefono.matches("^[0-9]{9}$")) {
+            throw new IllegalArgumentException("El teléfono debe tener exactamente 9 dígitos");
+        }
+        this.telefono = telefono.trim();
     }
 
     public String getMovil() {
@@ -106,7 +171,16 @@ public class Proveedor {
     }
 
     public void setMovil(String movil) {
-        this.movil = movil;
+        if (movil == null || movil.isBlank()) {
+            throw new IllegalArgumentException("El móvil no puede ser nulo o vacío");
+        }
+        if (movil.length() > 9) {
+            throw new IllegalArgumentException("El móvil no puede tener más de 9 caracteres");
+        }
+        if (!movil.matches("^[0-9]{9}$")) {
+            throw new IllegalArgumentException("El móvil debe tener exactamente 9 dígitos");
+        }
+        this.movil = movil.trim();
     }
 
     public String getFax() {
@@ -114,7 +188,16 @@ public class Proveedor {
     }
 
     public void setFax(String fax) {
-        this.fax = fax;
+        if (fax == null || fax.isBlank()) {
+            throw new IllegalArgumentException("El fax no puede ser nulo o vacío");
+        }
+        if (fax.length() > 9) {
+            throw new IllegalArgumentException("El fax no puede tener más de 9 caracteres");
+        }
+        if (! fax.matches("^[0-9]{9}$")) {
+            throw new IllegalArgumentException("El fax debe tener exactamente 9 dígitos");
+        }
+        this.fax = fax.trim();
     }
 
     public String getEmail() {
@@ -122,7 +205,16 @@ public class Proveedor {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("El email no puede ser nulo o vacío");
+        }
+        if (email.length() > 20) {
+            throw new IllegalArgumentException("El email no puede tener más de 20 caracteres");
+        }
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new IllegalArgumentException("El formato del email no es válido");
+        }
+        this.email = email.trim().toLowerCase();
     }
 
     public float getTotal() {
@@ -130,8 +222,34 @@ public class Proveedor {
     }
 
     public void setTotal(float total) {
+        if (total < 0) {
+            throw new IllegalArgumentException("El total no puede ser negativo");
+        }
         this.total = total;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.codigo);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Proveedor other = (Proveedor) obj;
+        return Objects.equals(this.codigo, other.codigo);
+    }
+    
     
     
 }
