@@ -23,7 +23,7 @@ public class ClienteDAO {
         this.conn = new ConexionDB();
     }
     
-    public void altaCliente(Cliente cliente) throws SQLException {
+    public void insertar(Cliente cliente) throws SQLException {
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
         }
@@ -57,12 +57,12 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente consultaCodigoCliente(String codigo) throws SQLException {
+    public Cliente buscarPorCodigo(String codigo) throws SQLException {
         if (codigo == null || codigo.isBlank()){
             throw new IllegalArgumentException("El nif es nulo o está vacío");
         }
         
-        String sql = "SELECT nif, apellidos, nombre, domicilio, codigo_postal, localidad, telefono, movil, fax, email, total_venta FROM clientes WHERE codigo = ?";
+        String sql = "SELECT nif, apellidos, nombre, domicilio, codigo_postal, localidad, telefono, movil, fax, email, total_ventas FROM clientes WHERE codigo = ?";
         Cliente c = new Cliente();
         
         try (PreparedStatement stm = conn.connectDataBase().prepareStatement(sql)){
@@ -84,7 +84,7 @@ public class ClienteDAO {
                 String movilQuery = rs.getString("movil");
                 String faxQuery = rs.getString("fax");
                 String emailQuery = rs.getString("email");
-                Float totalQuery = rs.getFloat("total");                
+                Float totalQuery = rs.getFloat("total_ventas");                
                 c.setNif(nifQuery);
                 c.setApellidos(apellidosQuery);
                 c.setNombre(nombreQuery);
@@ -105,12 +105,12 @@ public class ClienteDAO {
     }
     
     
-    public void bajaCliente(String codigo) throws SQLException{
+    public void borrar(String codigo) throws SQLException{
         if (codigo == null || codigo.isBlank()) {
             throw new IllegalArgumentException("El codigo no puede ser nulo o estar vacio");
         }
         
-        consultaCodigoCliente(codigo);
+        buscarPorCodigo(codigo);
         
         String sql = "DELETE FROM clientes WHERE codigo = ?";
         try (Connection connection = conn.connectDataBase();
@@ -124,14 +124,14 @@ public class ClienteDAO {
         }
     }
     
-    public void modificarCliente(Cliente cliente) throws SQLException {
+    public void actualizar(Cliente cliente) throws SQLException {
          if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
         }
         
-        consultaCodigoCliente(cliente.getCodigo());
+        buscarPorCodigo(cliente.getCodigo());
         
-        String sql = "UPDATE clientes SET nif = ?, apellidos = ?, nombre = ?, domicilio = ?, codigo_postal = ?, localidad = ?, telefono = ?, movil = ?, fax = ?, email = ?, total_ventas WHERE codigo = ?";
+        String sql = "UPDATE clientes SET nif = ?, apellidos = ?, nombre = ?, domicilio = ?, codigo_postal = ?, localidad = ?, telefono = ?, movil = ?, fax = ?, email = ? WHERE codigo = ?";
         try(Connection connection = conn.connectDataBase();
             PreparedStatement stm = connection.prepareStatement(sql)){
             
@@ -145,13 +145,59 @@ public class ClienteDAO {
             stm.setString(8, cliente.getMovil());
             stm.setString(9, cliente.getFax());
             stm.setString(10, cliente.getEmail());
-            stm.setFloat(11, cliente.getTotal());
-            
-            stm.execute();
-            
+            stm.setString(11, cliente.getCodigo());
+            stm.executeUpdate();
             
         } catch (SQLException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            throw new SQLException(e.getMessage(), e);
         }
     }
+    
+    public Cliente buscarEntreCodigos(String codigoX, String codigoZ) throws SQLException {
+        if (codigoX == null || codigoX.isBlank() || codigoZ == null || codigoZ.isBlank()){
+            throw new IllegalArgumentException("El nif es nulo o está vacío");
+        }
+        
+        String sql = "SELECT nif, apellidos, nombre, domicilio, codigo_postal, localidad, telefono, movil, fax, email, total_ventas FROM clientes BETWEEN codigo = ? AND codigo = ?";
+        Cliente c = new Cliente();
+        
+        try (PreparedStatement stm = conn.connectDataBase().prepareStatement(sql)){
+            stm.setString(1, codigoX);
+            stm.setString(2, codigoZ);
+            
+            try (ResultSet rs = stm.executeQuery()){
+               
+                if (!rs.next()) {
+                    throw new IllegalStateException("No existe ningún cliente con ese código");
+                }
+                
+                String nifQuery = rs.getString("nif");
+                String apellidosQuery = rs.getString("apellidos");
+                String nombreQuery = rs.getString("nombre");
+                String domicilioQuery = rs.getString("domicilio");
+                String codigo_postalQuery = rs.getString("codigo_postal");
+                String localidadQuery = rs.getString("localidad");
+                String telefonoQuery = rs.getString("telefono");
+                String movilQuery = rs.getString("movil");
+                String faxQuery = rs.getString("fax");
+                String emailQuery = rs.getString("email");
+                Float totalQuery = rs.getFloat("total_ventas");                
+                c.setNif(nifQuery);
+                c.setApellidos(apellidosQuery);
+                c.setNombre(nombreQuery);
+                c.setDomicilio(domicilioQuery);
+                c.setCodigoPostal(codigo_postalQuery);
+                c.setLocalidad(localidadQuery);
+                c.setTelefono(telefonoQuery);
+                c.setMovil(movilQuery);
+                c.setFax(faxQuery);
+                c.setEmail(emailQuery);
+                c.setTotal(totalQuery);
+            }
+            
+        } catch (SQLException e) {
+            throw new IllegalStateException("Ha ocurrido un error al acceder a la BdD ", e);
+        }
+        return c;
+    } 
 }

@@ -61,13 +61,13 @@ public class Proveedor {
         if (nif == null || nif.isBlank()) {
             throw new IllegalArgumentException("El NIF no puede ser nulo o vacío");
         }
-        if (nif.length() > 9) {
-            throw new IllegalArgumentException("El NIF no puede tener más de 9 caracteres");
-        }
+        
+        nif = nif.trim().toUpperCase();
+        
         if (!nif.matches("^[0-9]{8}[A-Za-z]$")) {
             throw new IllegalArgumentException("El NIF debe tener 8 dígitos seguidos de una letra");
         }
-        this.nif = nif.trim().toUpperCase();
+        this.nif = nif;
     }
 
     public String getApellidos() {
@@ -78,13 +78,13 @@ public class Proveedor {
         if (apellidos == null || apellidos.isBlank()) {
             throw new IllegalArgumentException("Los apellidos no pueden ser nulos o vacíos");
         }
-        if (apellidos.length() > 35) {
-            throw new IllegalArgumentException("Los apellidos no pueden tener más de 35 caracteres");
-        }
+        
+        apellidos = apellidos.trim();
+        
         if (!apellidos.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
             throw new IllegalArgumentException("Los apellidos solo pueden contener letras y espacios");
         }
-        this.apellidos = apellidos.trim();
+        this.apellidos = apellidos;
     }
 
     public String getNombre() {
@@ -95,13 +95,13 @@ public class Proveedor {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre no puede ser nulo o vacío");
         }
-        if (nombre.length() > 15) {
-            throw new IllegalArgumentException("El nombre no puede tener más de 15 caracteres");
-        }
-        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+        
+        nombre = nombre.trim();
+        
+        if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,15}")) {
             throw new IllegalArgumentException("El nombre solo puede contener letras y espacios");
         }
-        this.nombre = nombre.trim();
+        this.nombre = nombre;
     }
 
     public String getDomicilio() {
@@ -112,10 +112,13 @@ public class Proveedor {
         if (domicilio == null || domicilio.isBlank()) {
             throw new IllegalArgumentException("El domicilio no puede ser nulo o vacío");
         }
-        if (domicilio.length() > 40) {
-            throw new IllegalArgumentException("El domicilio no puede tener más de 40 caracteres");
+        
+        domicilio = domicilio. trim();
+        
+        if (!domicilio.matches("[A-Za-z\\s0-9ºª/]{1,40}")) {
+            throw new IllegalArgumentException("El nombre solo puede contener letras y espacios");
         }
-        this. domicilio = domicilio. trim();
+        this.domicilio = domicilio;
     }
 
     public String getCodigoPostal() {
@@ -126,13 +129,13 @@ public class Proveedor {
         if (codigoPostal == null || codigoPostal.isBlank()) {
             throw new IllegalArgumentException("El código postal no puede ser nulo o vacío");
         }
-        if (codigoPostal. length() > 5) {
-            throw new IllegalArgumentException("El código postal no puede tener más de 5 caracteres");
-        }
+        
+        codigoPostal = codigoPostal.trim();
+        
         if (!codigoPostal.matches("^[0-9]{5}$")) {
             throw new IllegalArgumentException("El código postal debe tener exactamente 5 dígitos");
         }
-        this.codigoPostal = codigoPostal.trim();
+        this.codigoPostal = codigoPostal;
     }
 
     public String getLocalidad() {
@@ -143,10 +146,13 @@ public class Proveedor {
         if (localidad == null || localidad.isBlank()) {
             throw new IllegalArgumentException("La localidad no puede ser nula o vacía");
         }
-        if (localidad.length() > 20) {
-            throw new IllegalArgumentException("La localidad no puede tener más de 20 caracteres");
+        
+        localidad = localidad.trim();
+        
+        if (!localidad.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,20}")) {
+            throw new IllegalArgumentException("El código postal debe tener exactamente 5 dígitos");
         }
-        this.localidad = localidad. trim();
+        this.localidad = localidad;
     }
 
     public String getTelefono() {
@@ -155,15 +161,17 @@ public class Proveedor {
 
     public void setTelefono(String telefono) {
         if (telefono == null || telefono.isBlank()) {
-            throw new IllegalArgumentException("El teléfono no puede ser nulo o vacío");
+            this.telefono = null;
+            return;
         }
-        if (telefono. length() > 9) {
-            throw new IllegalArgumentException("El teléfono no puede tener más de 9 caracteres");
-        }
-        if (!telefono.matches("^[0-9]{9}$")) {
+
+        telefono = telefono.trim();
+
+        if (!telefono.matches("\\d{9}")) {
             throw new IllegalArgumentException("El teléfono debe tener exactamente 9 dígitos");
         }
-        this.telefono = telefono.trim();
+
+        this.telefono = telefono;
     }
 
     public String getMovil() {
@@ -172,11 +180,12 @@ public class Proveedor {
 
     public void setMovil(String movil) {
         if (movil == null || movil.isBlank()) {
-            throw new IllegalArgumentException("El móvil no puede ser nulo o vacío");
+            this.movil = null;
+            return;
         }
-        if (movil.length() > 9) {
-            throw new IllegalArgumentException("El móvil no puede tener más de 9 caracteres");
-        }
+
+        movil = movil.trim();
+        
         if (!movil.matches("^[0-9]{9}$")) {
             throw new IllegalArgumentException("El móvil debe tener exactamente 9 dígitos");
         }
@@ -187,17 +196,18 @@ public class Proveedor {
         return fax;
     }
 
-    public void setFax(String fax) {
-        if (fax == null || fax.isBlank()) {
-            throw new IllegalArgumentException("El fax no puede ser nulo o vacío");
+   public void setFax(String fax) {
+        if (movil == null || movil.isBlank()) {
+            this.movil = null;
+            return;
         }
-        if (fax.length() > 9) {
-            throw new IllegalArgumentException("El fax no puede tener más de 9 caracteres");
-        }
-        if (! fax.matches("^[0-9]{9}$")) {
+
+        movil = movil.trim();
+    
+        if (!fax.matches("\\d{9}")) {
             throw new IllegalArgumentException("El fax debe tener exactamente 9 dígitos");
         }
-        this.fax = fax.trim();
+        this.fax = fax;
     }
 
     public String getEmail() {
@@ -205,16 +215,18 @@ public class Proveedor {
     }
 
     public void setEmail(String email) {
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("El email no puede ser nulo o vacío");
+        if (movil == null || movil.isBlank()) {
+            this.movil = null;
+            return;
         }
-        if (email.length() > 20) {
-            throw new IllegalArgumentException("El email no puede tener más de 20 caracteres");
+        
+        email = email.trim().toLowerCase();
+
+        movil = movil.trim();
+        if (!email.matches("^(?=.{1,20}$)[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new IllegalArgumentException("El email debe ser válido y como máximo 20 caracteres");
         }
-        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            throw new IllegalArgumentException("El formato del email no es válido");
-        }
-        this.email = email.trim().toLowerCase();
+        this.email = email;
     }
 
     public float getTotal() {

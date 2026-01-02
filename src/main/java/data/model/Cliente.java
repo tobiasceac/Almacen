@@ -26,7 +26,7 @@ public class Cliente {
     
     
     public Cliente(){}
-    
+
     public Cliente(String codigo, String nif, String apellidos, String nombre, String domicilio, String codigoPostal, String localidad, String telefono, String movil, String fax, String email, float total) {
         setCodigo(codigo);
         setNif(nif);
@@ -40,6 +40,20 @@ public class Cliente {
         setFax(fax);
         setEmail(email);
         setTotal(total);
+    }
+    
+    public Cliente(String codigo, String nif, String apellidos, String nombre, String domicilio, String codigoPostal, String localidad, String telefono, String movil, String fax, String email) {
+        setCodigo(codigo);
+        setNif(nif);
+        setApellidos(apellidos);
+        setNombre(nombre);
+        setDomicilio(domicilio);
+        setCodigoPostal(codigoPostal);
+        setLocalidad(localidad);
+        setTelefono(telefono);
+        setMovil(movil);
+        setFax(fax);
+        setEmail(email);
     }
 
     public String getCodigo() {
@@ -65,10 +79,12 @@ public class Cliente {
             throw new IllegalArgumentException("El NIF no puede ser nulo o vacío");
         }
         
+        nif = nif.trim().toUpperCase();
+        
         if (!nif.matches("^[0-9]{8}[A-Za-z]$")) {
             throw new IllegalArgumentException("El NIF debe tener 8 dígitos seguidos de una letra");
         }
-        this.nif = nif.trim().toUpperCase();
+        this.nif = nif;
     }
 
     public String getApellidos() {
@@ -79,13 +95,13 @@ public class Cliente {
         if (apellidos == null || apellidos.isBlank()) {
             throw new IllegalArgumentException("Los apellidos no pueden ser nulos o vacíos");
         }
-        if (apellidos.length() > 35) {
-            throw new IllegalArgumentException("Los apellidos no pueden tener más de 35 caracteres");
-        }
+        
+        apellidos = apellidos.trim();
+        
         if (!apellidos.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
             throw new IllegalArgumentException("Los apellidos solo pueden contener letras y espacios");
         }
-        this.apellidos = apellidos.trim();
+        this.apellidos = apellidos;
     }
 
     public String getNombre() {
@@ -96,13 +112,13 @@ public class Cliente {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre no puede ser nulo o vacío");
         }
-        if (nombre.length() > 15) {
-            throw new IllegalArgumentException("El nombre no puede tener más de 15 caracteres");
-        }
-        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+        
+        nombre = nombre.trim();
+        
+        if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,15}")) {
             throw new IllegalArgumentException("El nombre solo puede contener letras y espacios");
         }
-        this.nombre = nombre.trim();
+        this.nombre = nombre;
     }
 
     public String getDomicilio() {
@@ -113,10 +129,13 @@ public class Cliente {
         if (domicilio == null || domicilio.isBlank()) {
             throw new IllegalArgumentException("El domicilio no puede ser nulo o vacío");
         }
-        if (domicilio.length() > 40) {
-            throw new IllegalArgumentException("El domicilio no puede tener más de 40 caracteres");
+        
+        domicilio = domicilio. trim();
+        
+        if (!domicilio.matches("[A-Za-z\\s0-9ºª/]{1,40}")) {
+            throw new IllegalArgumentException("El nombre solo puede contener letras y espacios");
         }
-        this. domicilio = domicilio. trim();
+        this.domicilio = domicilio;
     }
 
     public String getCodigoPostal() {
@@ -127,13 +146,13 @@ public class Cliente {
         if (codigoPostal == null || codigoPostal.isBlank()) {
             throw new IllegalArgumentException("El código postal no puede ser nulo o vacío");
         }
-        if (codigoPostal. length() > 5) {
-            throw new IllegalArgumentException("El código postal no puede tener más de 5 caracteres");
-        }
+        
+        codigoPostal = codigoPostal.trim();
+        
         if (!codigoPostal.matches("^[0-9]{5}$")) {
             throw new IllegalArgumentException("El código postal debe tener exactamente 5 dígitos");
         }
-        this.codigoPostal = codigoPostal.trim();
+        this.codigoPostal = codigoPostal;
     }
 
     public String getLocalidad() {
@@ -144,10 +163,13 @@ public class Cliente {
         if (localidad == null || localidad.isBlank()) {
             throw new IllegalArgumentException("La localidad no puede ser nula o vacía");
         }
-        if (localidad.length() > 20) {
-            throw new IllegalArgumentException("La localidad no puede tener más de 20 caracteres");
+        
+        localidad = localidad.trim();
+        
+        if (!localidad.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,20}")) {
+            throw new IllegalArgumentException("El código postal debe tener exactamente 5 dígitos");
         }
-        this.localidad = localidad. trim();
+        this.localidad = localidad;
     }
 
     public String getTelefono() {
@@ -214,12 +236,14 @@ public class Cliente {
             this.movil = null;
             return;
         }
+        
+        email = email.trim().toLowerCase();
 
         movil = movil.trim();
         if (!email.matches("^(?=.{1,20}$)[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
             throw new IllegalArgumentException("El email debe ser válido y como máximo 20 caracteres");
         }
-        this.email = email.trim().toLowerCase();
+        this.email = email;
     }
 
     public float getTotal() {
@@ -257,7 +281,20 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return "Cliente{" + "codigo=" + codigo + ", nif=" + nif + ", apellidos=" + apellidos + ", nombre=" + nombre + ", domicilio=" + domicilio + ", codigoPostal=" + codigoPostal + ", localidad=" + localidad + ", telefono=" + telefono + ", movil=" + movil + ", fax=" + fax + ", email=" + email + ", total=" + total + '}';
+            return "Cliente{" +
+            "\n  codigo='" + codigo + '\'' +
+            ",\n  nif='" + nif + '\'' +
+            ",\n  apellidos='" + apellidos + '\'' +
+            ",\n  nombre='" + nombre + '\'' +
+            ",\n  domicilio='" + domicilio + '\'' +
+            ",\n  codigoPostal='" + codigoPostal + '\'' +
+            ",\n  localidad='" + localidad + '\'' +
+            ",\n  telefono='" + telefono + '\'' +
+            ",\n  movil='" + movil + '\'' +
+            ",\n  fax='" + fax + '\'' +
+            ",\n  email='" + email + '\'' +
+            ",\n  total=" + total +
+            "\n}";
     }
     
     

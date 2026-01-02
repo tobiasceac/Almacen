@@ -34,10 +34,41 @@ public class ClienteViewModel {
            String email, 
            float total
    ) throws 
-           SQLException {
+            SQLException {
        
        Cliente cliente = new Cliente(codigo, nif, apellidos, nombre, domicilio, codigoPostal, localidad, telefono, movil, fax, email, total);
-       clienteDAO.altaCliente(cliente);
-       
+       clienteDAO.insertar(cliente);
    }
+   
+    public Cliente consultaPorCodigo(String codigo)throws SQLException {
+       return clienteDAO.buscarPorCodigo(codigo);
+   }
+   
+   public void bajaCliente(String codigo) throws SQLException {
+       clienteDAO.borrar(codigo);
+   }
+   
+   public void modificarCliente(
+           String codigo,
+           String nif, 
+           String apellidos, 
+           String nombre, 
+           String domicilio, 
+           String codigoPostal, 
+           String localidad, 
+           String telefono, 
+           String movil, 
+           String fax, 
+           String email
+   ) throws 
+            SQLException{
+       
+       Cliente cliente = new Cliente(codigo, nif, apellidos, nombre, domicilio, codigoPostal, localidad, telefono, movil, fax, email);
+       clienteDAO.actualizar(cliente);
+   }
+   
+   public Cliente consultaEntreCodigos(String codigoX, String codigoZ) throws SQLException {
+       return clienteDAO.buscarEntreCodigos(codigoX, codigoZ);
+    }
+   
 }
