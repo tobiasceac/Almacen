@@ -24,6 +24,8 @@ public class Proveedor {
     private String email;
     private float total;
 
+    public Proveedor(){}
+    
     public Proveedor(String codigo, String nif, String apellidos, String nombre, String domicilio, String codigoPostal, String localidad, String telefono, String movil, String fax, String email, float total) {
         setCodigo(codigo);
         setNif(nif);
@@ -37,6 +39,20 @@ public class Proveedor {
         setFax(fax);
         setEmail(email);
         setTotal(total);
+    }
+    
+     public Proveedor(String codigo, String nif, String apellidos, String nombre, String domicilio, String codigoPostal, String localidad, String telefono, String movil, String fax, String email) {
+        setCodigo(codigo);
+        setNif(nif);
+        setApellidos(apellidos);
+        setNombre(nombre);
+        setDomicilio(domicilio);
+        setCodigoPostal(codigoPostal);
+        setLocalidad(localidad);
+        setTelefono(telefono);
+        setMovil(movil);
+        setFax(fax);
+        setEmail(email);
     }
 
     public String getCodigo() {

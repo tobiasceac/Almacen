@@ -4,29 +4,29 @@
  */
 package ui.screens;
 
-import data.model.Cliente;
+import data.model.Proveedor;
 import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
-import ui.viewmodel.ClienteViewModel;
+import ui.viewmodel.ProveedorViewModel;
 
 /**
  *
  * @author jfeyj
  */
-public class FormCliente extends javax.swing.JFrame {
+public class FormProveedor extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormCliente.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormProveedor.class.getName());
     
     private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO, ENTRECODIGOS, GRAFICOS};
     private Modo modo;
-    private ClienteViewModel vm = new ClienteViewModel();
+    private ProveedorViewModel vm = new ProveedorViewModel();
 
     /**
      * Creates new form Formulario
      */
-    public FormCliente() {
+    public FormProveedor() {
         initComponents();
         
         
@@ -673,7 +673,7 @@ public class FormCliente extends javax.swing.JFrame {
                 totalText.setEnabled(false);
                 
                 try {
-                   vm.altaCLiente(
+                   vm.altaProveedor(
                             codigoText.getText(), 
                             nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
                             apellidosText.getText(), 
@@ -700,11 +700,11 @@ public class FormCliente extends javax.swing.JFrame {
                 break; 
             case BAJA:
                 try {
-                    vm.bajaCliente(codigoText.getText());
+                    vm.bajaProveedor(codigoText.getText());
                     
                     JOptionPane.showMessageDialog(
                         null,                         
-                        "Cliente eliminado con exito", 
+                        "Proveedor eliminado con exito", 
                         "Información",                
                         JOptionPane.INFORMATION_MESSAGE 
                     );
@@ -721,7 +721,7 @@ public class FormCliente extends javax.swing.JFrame {
             case MODIFICACIONES: 
                 
                 try {
-                    vm.modificarCliente(
+                    vm.modificarProveedor(
                             codigoText.getText(), 
                             nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
                             apellidosText.getText(), 
@@ -736,7 +736,7 @@ public class FormCliente extends javax.swing.JFrame {
                     );
                     JOptionPane.showMessageDialog(
                         null,                         
-                        "Cliente modificado con exito", 
+                        "Proveedor modificado con exito", 
                         "Información",                
                         JOptionPane.INFORMATION_MESSAGE 
                     );
@@ -754,19 +754,19 @@ public class FormCliente extends javax.swing.JFrame {
                 break; 
             case CONSULTAPORCODIGO:
                 try {
-                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+                    Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
                     activateAll();
                     deshabilitarEdicion();
-                    nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
-                    apellidosText.setText(cliente.getApellidos());
-                    nombreText.setText(cliente.getNombre()); 
-                    cpText.setText(cliente.getCodigoPostal()); 
-                    localidadText.setText(cliente.getLocalidad());
-                    telefonoText.setText(cliente.getTelefono());
-                    movilText.setText(cliente.getMovil());
-                    faxText.setText(cliente.getFax());
-                    emailText.setText(cliente.getEmail());
-                    totalText.setText(String.valueOf(cliente.getTotal()));
+                    nifnText.setText(proveedor.getNif().substring(0, proveedor.getNif().length() - 1));
+                    apellidosText.setText(proveedor.getApellidos());
+                    nombreText.setText(proveedor.getNombre()); 
+                    cpText.setText(proveedor.getCodigoPostal()); 
+                    localidadText.setText(proveedor.getLocalidad());
+                    telefonoText.setText(proveedor.getTelefono());
+                    movilText.setText(proveedor.getMovil());
+                    faxText.setText(proveedor.getFax());
+                    emailText.setText(proveedor.getEmail());
+                    totalText.setText(String.valueOf(proveedor.getTotal()));
                 } catch (SQLException | IllegalStateException ex) {
                     codigoText.setText("");
                     JOptionPane.showMessageDialog(
@@ -960,7 +960,7 @@ public class FormCliente extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new FormCliente().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new FormProveedor().setVisible(true));
     }
     
     //método para comprobar Nombre y Apellido
