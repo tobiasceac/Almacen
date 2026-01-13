@@ -13,7 +13,8 @@ import java.sql.SQLException;
  * @author tobias
  */
 public class ProveedorViewModel {
-      private ProveedorDAO proveedorDAO;
+    
+   private ProveedorDAO proveedorDAO;
    
    public ProveedorViewModel(){
         this.proveedorDAO = new ProveedorDAO();

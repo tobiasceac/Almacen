@@ -22,7 +22,7 @@ public class FormCliente extends javax.swing.JFrame {
     private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO, ENTRECODIGOS, GRAFICOS};
     private Modo modo;
     private ClienteViewModel vm = new ClienteViewModel();
-
+    
     /**
      * Creates new form Formulario
      */
@@ -39,6 +39,7 @@ public class FormCliente extends javax.swing.JFrame {
         niflText.setBackground(new Color(240, 240, 240));
         niflText.setFocusable(false);
         niflText.setEnabled(false);
+
 
     }
     
@@ -122,6 +123,7 @@ public class FormCliente extends javax.swing.JFrame {
         desactivateAll();
         habilitarEdicion();
         modoForm();
+
     }
 
     /**
@@ -467,21 +469,20 @@ public class FormCliente extends javax.swing.JFrame {
                                     .addComponent(jLabel10)
                                     .addComponent(faxText, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(localidadText)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(aceptarButton)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(cancelButton)
-                            .addGap(12, 12, 12)
-                            .addComponent(salirButton))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel11)
-                                .addComponent(emailText, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(totalText, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel12))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(aceptarButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cancelButton)
+                        .addGap(12, 12, 12)
+                        .addComponent(salirButton))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel11)
+                            .addComponent(emailText, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(totalText, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel12)))
                     .addComponent(apellidosText)
                     .addComponent(domicilioText))
                 .addContainerGap(18, Short.MAX_VALUE))
@@ -667,7 +668,6 @@ public class FormCliente extends javax.swing.JFrame {
             
         } 
         
-        
         switch(modo) {
             case ALTA:
                 totalText.setEnabled(false);
@@ -755,8 +755,6 @@ public class FormCliente extends javax.swing.JFrame {
             case CONSULTAPORCODIGO:
                 try {
                     Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
-                    activateAll();
-                    deshabilitarEdicion();
                     nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
                     apellidosText.setText(cliente.getApellidos());
                     nombreText.setText(cliente.getNombre()); 
@@ -902,8 +900,9 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_totalTextCaretUpdate
 
     private void altasMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_altasMenuActionPerformed
-        preparacionModos();
         modo = Modo.ALTA;
+        preparacionModos();
+
     }//GEN-LAST:event_altasMenuActionPerformed
 
     private void bajasMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bajasMenuActionPerformed
@@ -931,8 +930,6 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        preparacionModos();
-        modo = Modo.CONSULTAPORCODIGO;  
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     public void ventanaEntreCodigos(){

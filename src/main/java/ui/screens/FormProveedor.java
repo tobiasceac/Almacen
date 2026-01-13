@@ -755,8 +755,6 @@ public class FormProveedor extends javax.swing.JFrame {
             case CONSULTAPORCODIGO:
                 try {
                     Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
-                    activateAll();
-                    deshabilitarEdicion();
                     nifnText.setText(proveedor.getNif().substring(0, proveedor.getNif().length() - 1));
                     apellidosText.setText(proveedor.getApellidos());
                     nombreText.setText(proveedor.getNombre()); 
