@@ -31,6 +31,7 @@ public class FormArticulo extends javax.swing.JFrame {
         
         
         desactivateAll();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar        
         setLocationRelativeTo(null); // Centra la ventana al inizializar
         setResizable(false); // Desactiva el redimensionamiento
 
@@ -390,7 +391,7 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void aceptarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarButtonActionPerformed
-
+/*
         String text = "Errores en: \n";
         ArrayList<String> errores = new ArrayList<>();
 
@@ -561,7 +562,7 @@ public class FormArticulo extends javax.swing.JFrame {
                 break;
         }
         
-        focoCodigo();
+        focoCodigo();*/
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
     private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate

@@ -5,8 +5,14 @@
 package ui.viewmodel;
 
 import data.dao.ClienteDAO;
+import data.jasper.JasperCliente;
 import data.model.Cliente;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
  *
@@ -15,9 +21,11 @@ import java.sql.SQLException;
 public class ClienteViewModel {
    
    private ClienteDAO clienteDAO;
+   private JasperCliente jCliente;
    
    public ClienteViewModel(){
         this.clienteDAO = new ClienteDAO();
+        this.jCliente = new JasperCliente();
    }
    
    public void altaCLiente (
@@ -70,5 +78,22 @@ public class ClienteViewModel {
    public Cliente consultaEntreCodigos(String codigoX, String codigoZ) throws SQLException {
        return clienteDAO.buscarEntreCodigos(codigoX, codigoZ);
     }
+   
+   public void jasperClientePorCodigo() throws JRException, SQLException{
+       jCliente.jListadoPorCodigo();
+   }
+   
+   public void jasperEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException{
+       Map<String, Object> parametros = new HashMap<>();
+       
+       int cod1 = Integer.parseInt(codigoUno);
+       int cod2 = Integer.parseInt(codigoDos);
+       
+       parametros.put("codigo", cod1);
+       parametros.put("codigo2", cod2);
+
+       
+       jCliente.jEntreCodigos(parametros);
+   }
    
 }

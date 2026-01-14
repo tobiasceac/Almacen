@@ -31,6 +31,7 @@ public class FormProveedor extends javax.swing.JFrame {
         
         
         desactivateAll();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar        
         setLocationRelativeTo(null); // Centra la ventana al inizializar
         setResizable(false); // Desactiva el redimensionamiento
         // Hacer que el campo de letra del DNI no sea editable

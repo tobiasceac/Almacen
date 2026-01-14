@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JRException;
 import ui.viewmodel.ClienteViewModel;
 
 /**
@@ -19,7 +20,7 @@ public class FormCliente extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormCliente.class.getName());
     
-    private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO, ENTRECODIGOS, GRAFICOS};
+    private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO};
     private Modo modo;
     private ClienteViewModel vm = new ClienteViewModel();
     
@@ -31,6 +32,7 @@ public class FormCliente extends javax.swing.JFrame {
         
         
         desactivateAll();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar
         setLocationRelativeTo(null); // Centra la ventana al inizializar
         setResizable(false); // Desactiva el redimensionamiento
         // Hacer que el campo de letra del DNI no sea editable
@@ -921,15 +923,21 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
-        modo = Modo.ENTRECODIGOS;  
+        EntreCodigos ec = new EntreCodigos();
+        ec.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-        preparacionModos();
-        modo = Modo.GRAFICOS;  
+         
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        try {
+            vm.jasperClientePorCodigo();
+        } catch (JRException | SQLException ex) {
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     public void ventanaEntreCodigos(){
