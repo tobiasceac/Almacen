@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
+import ui.interfaces.AccionJasperEntreCodigos;
 import ui.viewmodel.ClienteViewModel;
 
 /**
@@ -18,12 +19,13 @@ import ui.viewmodel.ClienteViewModel;
 public class EntreCodigos extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EntreCodigos.class.getName());
-    private ClienteViewModel vm = new ClienteViewModel();
+    private AccionJasperEntreCodigos accionJasper;
 
     /**
      * Creates new form EntreCodigos
      */
-    public EntreCodigos() {
+    public EntreCodigos(AccionJasperEntreCodigos accionJasper) {
+        this.accionJasper = accionJasper;
         initComponents();
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar
         setLocationRelativeTo(null); 
@@ -120,7 +122,7 @@ public class EntreCodigos extends javax.swing.JFrame {
         if (!(codigoCheck(codigoUnoText.getText()))){
                 errores.add("Primer campo Invalido");
         }
-        if (!(codigoCheck(codigoDosText.getText()) && Integer.parseInt(codigoUnoText.getText()) < Integer.parseInt(codigoDosText.getText()))){
+        if (!(codigoCheck(codigoDosText.getText()) && Integer.parseInt(codigoUnoText.getText()) <= Integer.parseInt(codigoDosText.getText()))){
                 errores.add("Formato inválido o el segundo código debe ser mayor o igual que el primero");
         }
         
@@ -142,7 +144,8 @@ public class EntreCodigos extends javax.swing.JFrame {
         } else {
             
            try {
-               vm.jasperEntreCodigos(codigoUnoText.getText(), codigoDosText.getText());
+               accionJasper.ejecutar(codigoUnoText.getText(), codigoDosText.getText());
+               JOptionPane.showMessageDialog(null, "Reporte generado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
            } catch (JRException ex) {
                System.getLogger(EntreCodigos.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
            } catch (SQLException ex) {
@@ -166,7 +169,7 @@ public class EntreCodigos extends javax.swing.JFrame {
 
     private void codigoDosTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoDosTextCaretUpdate
        String text = codigoDosText.getText();
-        if (!(codigoCheck(text) && Integer.parseInt(codigoUnoText.getText()) < Integer.parseInt(text))){
+        if (!(codigoCheck(text) && Integer.parseInt(codigoUnoText.getText()) <= Integer.parseInt(text))){
             codigoDosText.setForeground(Color.RED);
         } else {
             codigoDosText.setForeground(Color.BLACK);
@@ -205,7 +208,6 @@ public class EntreCodigos extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new EntreCodigos().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

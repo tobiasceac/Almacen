@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JRException;
 import ui.viewmodel.ProveedorViewModel;
 
 /**
@@ -19,7 +20,7 @@ public class FormProveedor extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormProveedor.class.getName());
     
-    private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO, ENTRECODIGOS, GRAFICOS};
+    private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO};
     private Modo modo;
     private ProveedorViewModel vm = new ProveedorViewModel();
 
@@ -921,17 +922,18 @@ public class FormProveedor extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
-        modo = Modo.ENTRECODIGOS;  
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-        preparacionModos();
-        modo = Modo.GRAFICOS;  
+
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        preparacionModos();
-        modo = Modo.CONSULTAPORCODIGO;  
+         try {
+            vm.jasperProveedorPorCodigo();
+        } catch (JRException | SQLException ex) {
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }  
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     public void ventanaEntreCodigos(){

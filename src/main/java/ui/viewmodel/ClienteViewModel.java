@@ -83,7 +83,7 @@ public class ClienteViewModel {
        jCliente.jListadoPorCodigo();
    }
    
-   public void jasperEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException{
+   public void jasperClienteEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException{
        Map<String, Object> parametros = new HashMap<>();
        
        int cod1 = Integer.parseInt(codigoUno);

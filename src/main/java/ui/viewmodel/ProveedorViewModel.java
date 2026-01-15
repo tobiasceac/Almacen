@@ -5,8 +5,12 @@
 package ui.viewmodel;
 
 import data.dao.ProveedorDAO;
+import data.jasper.JasperProveedor;
 import data.model.Proveedor;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import net.sf.jasperreports.engine.JRException;
 
 /**
  *
@@ -15,6 +19,7 @@ import java.sql.SQLException;
 public class ProveedorViewModel {
     
    private ProveedorDAO proveedorDAO;
+   private JasperProveedor jProveedor;
    
    public ProveedorViewModel(){
         this.proveedorDAO = new ProveedorDAO();
@@ -70,5 +75,22 @@ public class ProveedorViewModel {
    public Proveedor consultaEntreCodigos(String codigoX, String codigoZ) throws SQLException {
        return proveedorDAO.buscarEntreCodigos(codigoX, codigoZ);
     }
+   
+      public void jasperProveedorPorCodigo() throws JRException, SQLException{
+       jProveedor.jListadoPorCodigo();
+   }
+   
+   public void jasperProveedorEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException{
+       Map<String, Object> parametros = new HashMap<>();
+       
+       int cod1 = Integer.parseInt(codigoUno);
+       int cod2 = Integer.parseInt(codigoDos);
+       
+       parametros.put("codigo", cod1);
+       parametros.put("codigo2", cod2);
+
+       
+       jProveedor.jEntreCodigos(parametros);
+   }
    
 }
