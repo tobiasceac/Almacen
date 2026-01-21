@@ -5,18 +5,26 @@
 package ui.viewmodel;
 
 import data.dao.ArticuloDAO;
+import data.jasper.JasperArticulo;
 import data.model.Articulo;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import net.sf.jasperreports.engine.JRException;
 
 /**
  *
  * @author tobias
  */
 public class ArticuloViewModel {
-  private ArticuloDAO articuloDAO;
+   private final ArticuloDAO articuloDAO;
+   private final JasperArticulo jArticulo;
+
    
    public ArticuloViewModel(){
         this.articuloDAO = new ArticuloDAO();
+        this.jArticulo = new JasperArticulo();
+
    }
    
    public void altaArticulo (
@@ -58,5 +66,22 @@ public class ArticuloViewModel {
    public Articulo consultaEntreCodigos(String codigoX, String codigoZ) throws SQLException {
        return articuloDAO.buscarEntreCodigos(codigoX, codigoZ);
     }
+   
+   public void jasperArticuloPorCodigo() throws JRException, SQLException{
+       jArticulo.jListadoPorCodigo();
+   }
+   
+   public void jasperArticuloEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException{
+       Map<String, Object> parametros = new HashMap<>();
+       
+       int cod1 = Integer.parseInt(codigoUno);
+       int cod2 = Integer.parseInt(codigoDos);
+       
+       parametros.put("codigo", cod1);
+       parametros.put("codigo2", cod2);
+
+       
+       jArticulo.jEntreCodigos(parametros);
+   }
    
 }

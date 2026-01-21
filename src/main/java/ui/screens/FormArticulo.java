@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JRException;
 import static ui.screens.FormCliente.codigoCheck;
 import ui.viewmodel.ArticuloViewModel;
 import ui.viewmodel.ClienteViewModel;
@@ -137,7 +138,7 @@ public class FormArticulo extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         porCodigoMenu = new javax.swing.JMenuItem();
         porCodigoMenuV2 = new javax.swing.JMenu();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        ListadoPorCodigoJasper = new javax.swing.JMenuItem();
         entreCodigosMenu = new javax.swing.JMenuItem();
         graficoMenu = new javax.swing.JMenuItem();
 
@@ -285,13 +286,13 @@ public class FormArticulo extends javax.swing.JFrame {
 
         porCodigoMenuV2.setText("Listados");
 
-        jMenuItem6.setText("Por código");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+        ListadoPorCodigoJasper.setText("Por código");
+        ListadoPorCodigoJasper.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
+                ListadoPorCodigoJasperActionPerformed(evt);
             }
         });
-        porCodigoMenuV2.add(jMenuItem6);
+        porCodigoMenuV2.add(ListadoPorCodigoJasper);
 
         entreCodigosMenu.setText("Entre códigos");
         entreCodigosMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -600,7 +601,12 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
-        modo = Modo.ENTRECODIGOS;  
+        EntreCodigos ec = new EntreCodigos( 
+          (cod1, cod2) -> vm.jasperArticuloEntreCodigos(cod1, cod2)
+        );
+        ec.setVisible(true);
+        this.dispose();
+
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
@@ -608,8 +614,19 @@ public class FormArticulo extends javax.swing.JFrame {
         modo = Modo.GRAFICOS;  
     }//GEN-LAST:event_graficoMenuActionPerformed
 
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
+    private void ListadoPorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ListadoPorCodigoJasperActionPerformed
+        try {
+            vm.jasperArticuloPorCodigo();
+            JOptionPane.showMessageDialog(
+                        null,                       
+                        "¡PDF descargado correctamente!",     
+                        "Realizado",                    
+                        JOptionPane.INFORMATION_MESSAGE 
+                    );
+        } catch (JRException | SQLException ex) {
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_ListadoPorCodigoJasperActionPerformed
 
     private void stockMinTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockMinTextActionPerformed
         // TODO add your handling code here:
@@ -664,7 +681,12 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_PrecioVentaTextCaretUpdate
 
     private void descripcionTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_descripcionTextCaretUpdate
-        // TODO add your handling code here:
+        String text = descripcionText.getText();
+        if (descripcionCheck(text)){
+            descripcionText.setForeground(Color.BLACK);
+        } else {
+            descripcionText.setForeground(Color.RED);
+        }
     }//GEN-LAST:event_descripcionTextCaretUpdate
 
     public void ventanaEntreCodigos(){
@@ -700,6 +722,10 @@ public class FormArticulo extends javax.swing.JFrame {
         return text.matches("[0-9]{6}");
     }
     
+    public static boolean descripcionCheck(String text){
+            return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,25}");
+    }
+    
     public boolean esFloat(String text) {
     if (text == null) return false;
 
@@ -731,6 +757,7 @@ public class FormArticulo extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem ListadoPorCodigoJasper;
     private javax.swing.JTextField PrecioVentaText;
     private javax.swing.JButton aceptarButton;
     private javax.swing.JMenuItem altasMenu;
@@ -749,7 +776,6 @@ public class FormArticulo extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator2;

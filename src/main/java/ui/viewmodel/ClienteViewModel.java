@@ -11,17 +11,15 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
  *
  * @author tobias
  */
 public class ClienteViewModel {
-   
-   private ClienteDAO clienteDAO;
-   private JasperCliente jCliente;
+  
+   private final ClienteDAO clienteDAO;
+   private final JasperCliente jCliente;
    
    public ClienteViewModel(){
         this.clienteDAO = new ClienteDAO();

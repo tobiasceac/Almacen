@@ -10,7 +10,7 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT * FROM Proveedores WHERE codigo::Integer BETWEEN codigo AND codigo2]]>
+		<![CDATA[SELECT * FROM Proveedores WHERE codigo::Integer BETWEEN $P{codigo} AND $P{codigo2}]]>
 	</queryString>
 	<field name="codigo" class="java.lang.String"/>
 	<field name="nif" class="java.lang.String"/>
