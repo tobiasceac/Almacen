@@ -230,7 +230,6 @@
     <Component class="javax.swing.JTextField" name="codigoText">
       <Events>
         <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="codigoTextCaretUpdate"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="codigoTextActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="aceptarButton">
@@ -279,6 +278,9 @@
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
           </Properties>
+          <Events>
+            <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="descripcionTextCaretUpdate"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -289,11 +291,13 @@
     </Component>
     <Component class="javax.swing.JTextField" name="stockText">
       <Events>
+        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="stockTextCaretUpdate"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stockTextActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="stockMinText">
       <Events>
+        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="stockMinTextCaretUpdate"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stockMinTextActionPerformed"/>
       </Events>
     </Component>
@@ -314,11 +318,13 @@
     </Component>
     <Component class="javax.swing.JTextField" name="precioCompraText">
       <Events>
+        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="precioCompraTextCaretUpdate"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="precioCompraTextActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="PrecioVentaText">
       <Events>
+        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="PrecioVentaTextCaretUpdate"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PrecioVentaTextActionPerformed"/>
       </Events>
     </Component>

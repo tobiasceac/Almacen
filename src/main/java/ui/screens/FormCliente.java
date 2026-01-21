@@ -723,6 +723,7 @@ public class FormCliente extends javax.swing.JFrame {
             case MODIFICACIONES: 
                 
                 try {
+                    
                     vm.modificarCliente(
                             codigoText.getText(), 
                             nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
@@ -746,7 +747,7 @@ public class FormCliente extends javax.swing.JFrame {
                     codigoText.setText("");
                     JOptionPane.showMessageDialog(
                         null,                       
-                        "Ha ocurrido un error",     
+                        ex,     
                         "Error",                    
                         JOptionPane.ERROR_MESSAGE
                     );
@@ -789,6 +790,19 @@ public class FormCliente extends javax.swing.JFrame {
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                 activateAll();
+            }
+            if(modo == Modo.MODIFICACIONES){
+                try {
+                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+                 } catch (SQLException | IllegalStateException ex) {
+                    JOptionPane.showMessageDialog(
+                        null,                       
+                        "El Cliente buscado no existe",     
+                        "Error",                    
+                        JOptionPane.ERROR_MESSAGE 
+                    );
+                    codigoText.setForeground(Color.RED);
+                }
             }
         } else {
             codigoText.setForeground(Color.RED);
@@ -937,6 +951,12 @@ public class FormCliente extends javax.swing.JFrame {
     private void PorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PorCodigoJasperActionPerformed
         try {
             vm.jasperClientePorCodigo();
+            JOptionPane.showMessageDialog(
+                        null,                       
+                        "¡PDF descargado correctamente!",     
+                        "Realizado",                    
+                        JOptionPane.INFORMATION_MESSAGE 
+                    );
         } catch (JRException | SQLException ex) {
             System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

@@ -28,7 +28,7 @@ public class ArticuloDAO {
             throw new IllegalArgumentException("El articulo no puede ser nulo");
         }
         
-        String sql = "INSERT INTO articulos(codigo, descripcion, stock, stock_minimo, precio_compra, precio_venta) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO articulos(codigo, descripcion, stock, stock_minimo, precio_compra, precio_venta) VALUES(?, ?, ?, ?, ?, ?)";
         
         try(Connection connection = conn.connectDataBase();
             PreparedStatement stm = connection.prepareStatement(sql)){
@@ -115,7 +115,7 @@ public class ArticuloDAO {
         
         buscarPorCodigo(articulo.getCodigo());
         
-        String sql = "UPDATE clientes SET descripcion = ?, stock = ?, stock_minimo = ?, precio_compra = ?, precio_venta = ? WHERE codigo = ?";
+        String sql = "UPDATE articulos SET descripcion = ?, stock = ?, stock_minimo = ?, precio_compra = ?, precio_venta = ? WHERE codigo = ?";
         try(Connection connection = conn.connectDataBase();
             PreparedStatement stm = connection.prepareStatement(sql)){
             
@@ -124,6 +124,7 @@ public class ArticuloDAO {
             stm.setFloat(3, articulo.getStockMinimo());
             stm.setFloat(4, articulo.getPrecioCompra());
             stm.setFloat(5, articulo.getPrecioVenta());
+            stm.setString(6, articulo.getCodigo());
 
             stm.executeUpdate();
             

@@ -32,12 +32,12 @@ public class JasperProveedor {
     }
 
     public void jListadoPorCodigo() throws JRException, SQLException{
-        String rutaJasper = "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/ListadoPorCodigoProveedores.jasper";
+        String rutaJasper ="/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/ListadoPorCodigoProveedores.jasper";                
         jasperMethods(rutaJasper);
     }
     
     public void jEntreCodigos(Map<String, Object> parametros) throws JRException, SQLException{
-        String rutaJasper = "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/EntreCodigosProveedores.jasper";
+        String rutaJasper ="/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/EntreCodigosProveedores.jasper";        
         JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(rutaJasper);
         JasperPrint print = JasperFillManager.fillReport(report, parametros, conn.connectDataBase());
         JasperExportManager.exportReportToPdfFile(print, "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/PDF/Entre Codigos Proveedores.pdf");

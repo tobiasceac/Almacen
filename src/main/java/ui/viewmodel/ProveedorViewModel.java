@@ -23,6 +23,7 @@ public class ProveedorViewModel {
    
    public ProveedorViewModel(){
         this.proveedorDAO = new ProveedorDAO();
+        this.jProveedor = new JasperProveedor();
    }
    
    public void altaProveedor (

@@ -33,12 +33,13 @@ public class JasperCliente {
     }
 
     public void jListadoPorCodigo() throws JRException, SQLException{
-        String rutaJasper = "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/ListadoPorCodigoClientes.jasper";
+        String rutaJasper ="/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/ListadoPorCodigoClientes.jasper";
+
         jasperMethods(rutaJasper);
     }
     
     public void jEntreCodigos(Map<String, Object> parametros) throws JRException, SQLException{
-        String rutaJasper = "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/EntreCodigosClientes.jasper";
+        String rutaJasper ="/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/EntreCodigosClientes.jasper";        
         JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(rutaJasper);
         JasperPrint print = JasperFillManager.fillReport(report, parametros, conn.connectDataBase());
         JasperExportManager.exportReportToPdfFile(print, "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/PDF/Entre Codigos Clientes.pdf");

@@ -83,7 +83,7 @@ public class ProveedorDAO {
                 String movilQuery = rs.getString("movil");
                 String faxQuery = rs.getString("fax");
                 String emailQuery = rs.getString("email");
-                Float totalQuery = rs.getFloat("total_ventas");                
+                Float totalQuery = rs.getFloat("total_compras");                
                 proveedor.setNif(nifQuery);
                 proveedor.setApellidos(apellidosQuery);
                 proveedor.setNombre(nombreQuery);
@@ -180,7 +180,7 @@ public class ProveedorDAO {
                 String movilQuery = rs.getString("movil");
                 String faxQuery = rs.getString("fax");
                 String emailQuery = rs.getString("email");
-                Float totalQuery = rs.getFloat("total_ventas");                
+                Float totalQuery = rs.getFloat("total_compras");                
                 proveedor.setNif(nifQuery);
                 proveedor.setApellidos(apellidosQuery);
                 proveedor.setNombre(nombreQuery);

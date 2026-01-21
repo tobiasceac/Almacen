@@ -174,7 +174,7 @@ public class FormProveedor extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         porCodigoMenu = new javax.swing.JMenuItem();
         porCodigoMenuV2 = new javax.swing.JMenu();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        ListadoPorCodigoJasper = new javax.swing.JMenuItem();
         entreCodigosMenu = new javax.swing.JMenuItem();
         graficoMenu = new javax.swing.JMenuItem();
 
@@ -397,13 +397,13 @@ public class FormProveedor extends javax.swing.JFrame {
 
         porCodigoMenuV2.setText("Listados");
 
-        jMenuItem6.setText("Por código");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+        ListadoPorCodigoJasper.setText("Por código");
+        ListadoPorCodigoJasper.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
+                ListadoPorCodigoJasperActionPerformed(evt);
             }
         });
-        porCodigoMenuV2.add(jMenuItem6);
+        porCodigoMenuV2.add(ListadoPorCodigoJasper);
 
         entreCodigosMenu.setText("Entre códigos");
         entreCodigosMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -771,15 +771,13 @@ public class FormProveedor extends javax.swing.JFrame {
                     codigoText.setText("");
                     JOptionPane.showMessageDialog(
                         null,                       
-                        "Ha ocurrido un error",     
+                        ex,     
                         "Error",                    
                         JOptionPane.ERROR_MESSAGE 
                     );
-                    
                 }
                 break;
         }
-        
         focoCodigo();
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
@@ -789,6 +787,19 @@ public class FormProveedor extends javax.swing.JFrame {
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                 activateAll();
+            }
+            if(modo == Modo.MODIFICACIONES){
+                try {
+                    Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
+                 } catch (SQLException | IllegalStateException ex) {
+                    JOptionPane.showMessageDialog(
+                        null,                       
+                        "El Proveedor buscado no existe",     
+                        "Error",                    
+                        JOptionPane.ERROR_MESSAGE 
+                    );
+                    codigoText.setForeground(Color.RED);
+                }
             }
         } else {
             codigoText.setForeground(Color.RED);
@@ -922,19 +933,28 @@ public class FormProveedor extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
+        EntreCodigos ec = new EntreCodigos((cod1, cod2) -> vm.jasperProveedorEntreCodigos(cod2, cod2));
+        ec.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
 
     }//GEN-LAST:event_graficoMenuActionPerformed
 
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+    private void ListadoPorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ListadoPorCodigoJasperActionPerformed
          try {
             vm.jasperProveedorPorCodigo();
+                        JOptionPane.showMessageDialog(
+                        null,                       
+                        "¡PDF descargado correctamente!",     
+                        "Realizado",                    
+                        JOptionPane.INFORMATION_MESSAGE 
+                    );
         } catch (JRException | SQLException ex) {
             System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }  
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
+    }//GEN-LAST:event_ListadoPorCodigoJasperActionPerformed
 
     public void ventanaEntreCodigos(){
     }
@@ -1079,6 +1099,7 @@ public class FormProveedor extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem ListadoPorCodigoJasper;
     private javax.swing.JButton aceptarButton;
     private javax.swing.JMenuItem altasMenu;
     private javax.swing.JTextField apellidosText;
@@ -1106,7 +1127,6 @@ public class FormProveedor extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JTextField localidadText;

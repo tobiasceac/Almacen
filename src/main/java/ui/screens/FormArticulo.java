@@ -4,11 +4,14 @@
  */
 package ui.screens;
 
+import data.model.Articulo;
 import data.model.Cliente;
 import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import static ui.screens.FormCliente.codigoCheck;
+import ui.viewmodel.ArticuloViewModel;
 import ui.viewmodel.ClienteViewModel;
 
 /**
@@ -21,7 +24,7 @@ public class FormArticulo extends javax.swing.JFrame {
     
     private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO, ENTRECODIGOS, GRAFICOS};
     private Modo modo;
-    private ClienteViewModel vm = new ClienteViewModel();
+    private ArticuloViewModel vm = new ArticuloViewModel();
     
     /**
      * Creates new form Formulario
@@ -146,11 +149,6 @@ public class FormArticulo extends javax.swing.JFrame {
                 codigoTextCaretUpdate(evt);
             }
         });
-        codigoText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                codigoTextActionPerformed(evt);
-            }
-        });
 
         aceptarButton.setText("Aceptar");
         aceptarButton.addActionListener(new java.awt.event.ActionListener() {
@@ -179,16 +177,31 @@ public class FormArticulo extends javax.swing.JFrame {
 
         descripcionText.setColumns(20);
         descripcionText.setRows(5);
+        descripcionText.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                descripcionTextCaretUpdate(evt);
+            }
+        });
         jScrollPane1.setViewportView(descripcionText);
 
         jLabel13.setText("Stock");
 
+        stockText.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                stockTextCaretUpdate(evt);
+            }
+        });
         stockText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stockTextActionPerformed(evt);
             }
         });
 
+        stockMinText.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                stockMinTextCaretUpdate(evt);
+            }
+        });
         stockMinText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stockMinTextActionPerformed(evt);
@@ -201,12 +214,22 @@ public class FormArticulo extends javax.swing.JFrame {
 
         jLabel3.setText("Precio Venta");
 
+        precioCompraText.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                precioCompraTextCaretUpdate(evt);
+            }
+        });
         precioCompraText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 precioCompraTextActionPerformed(evt);
             }
         });
 
+        PrecioVentaText.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                PrecioVentaTextCaretUpdate(evt);
+            }
+        });
         PrecioVentaText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 PrecioVentaTextActionPerformed(evt);
@@ -379,10 +402,6 @@ public class FormArticulo extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void codigoTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codigoTextActionPerformed
-
-    }//GEN-LAST:event_codigoTextActionPerformed
-
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
         reset();
@@ -391,7 +410,7 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void aceptarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarButtonActionPerformed
-/*
+
         String text = "Errores en: \n";
         ArrayList<String> errores = new ArrayList<>();
 
@@ -404,33 +423,6 @@ public class FormArticulo extends javax.swing.JFrame {
             default: 
                if (!(codigoCheck(codigoText.getText()))){
                 errores.add("Código");
-                }
-                if (!(numCheck(nifnText.getText()))){
-                    errores.add("DNI");
-                }
-                if (!(nameCheck(nombreText.getText()))) {
-                    errores.add("Nombre");
-                }
-                if (!(nameCheck(apellidosText.getText()))) {
-                    errores.add("Apellidos");
-                }
-                if (domicilioText.getText().isEmpty()){
-                    errores.add("Domicilio");
-                }
-                if (!(cpCheck(cpText.getText()))) {
-                    errores.add("C.P.");
-                }
-                if (!(phoneCheck(telefonoText.getText()))) {
-                    errores.add("Teléfono");
-                }
-                if (!(phoneCheck(movilText.getText()))) {
-                    errores.add("Móvil");
-                }
-                if (!(phoneCheck(faxText.getText()))) {
-                    errores.add("Fax");
-                }
-                if (!(emailCheck(emailText.getText()))) {
-                    errores.add("email");
                 }
         } 
         
@@ -457,20 +449,14 @@ public class FormArticulo extends javax.swing.JFrame {
         switch(modo) {
             case ALTA:
                 try {
-                   vm.altaCLiente(
-                            codigoText.getText(), 
-                            nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
-                            apellidosText.getText(), 
-                            nombreText.getText(), 
-                            domicilioText.getText(), 
-                            cpText.getText(), 
-                            localidadText.getText(), 
-                            telefonoText.getText(), 
-                            movilText.getText(), 
-                            faxText.getText(), 
-                            emailText.getText(), 
-                            0
-                    );
+                   vm.altaArticulo(
+                           codigoText.getText(),
+                           descripcionText.getText(),
+                           Float.parseFloat(stockText.getText()),
+                           Float.parseFloat(stockMinText.getText()),
+                           Float.parseFloat(precioCompraText.getText()),
+                           Float.parseFloat(PrecioVentaText.getText())
+                   );
                 } catch (SQLException | IllegalStateException ex) {
                     codigoText.setText("");                    
                     JOptionPane.showMessageDialog(
@@ -484,7 +470,7 @@ public class FormArticulo extends javax.swing.JFrame {
                 break; 
             case BAJA:
                 try {
-                    vm.bajaCliente(codigoText.getText());
+                    vm.bajaArticulo(codigoText.getText());
                     
                     JOptionPane.showMessageDialog(
                         null,                         
@@ -503,21 +489,15 @@ public class FormArticulo extends javax.swing.JFrame {
                 reset();
                 break; 
             case MODIFICACIONES: 
-                
                 try {
-                    vm.modificarCliente(
-                            codigoText.getText(), 
-                            nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
-                            apellidosText.getText(), 
-                            nombreText.getText(), 
-                            domicilioText.getText(), 
-                            cpText.getText(), 
-                            localidadText.getText(), 
-                            telefonoText.getText(), 
-                            movilText.getText(), 
-                            faxText.getText(), 
-                            emailText.getText()
-                    );
+                    vm.modificarArticulo(
+                           codigoText.getText(),
+                           descripcionText.getText(),
+                           Float.parseFloat(stockText.getText()),
+                           Float.parseFloat(stockMinText.getText()),
+                           Float.parseFloat(precioCompraText.getText()),
+                           Float.parseFloat(PrecioVentaText.getText())
+                   );
                     JOptionPane.showMessageDialog(
                         null,                         
                         "Cliente modificado con exito", 
@@ -528,27 +508,24 @@ public class FormArticulo extends javax.swing.JFrame {
                     codigoText.setText("");
                     JOptionPane.showMessageDialog(
                         null,                       
-                        "Ha ocurrido un error",     
+                        ex,     
                         "Error",                    
                         JOptionPane.ERROR_MESSAGE
                     );
                 }
+                
                 reset();
                 desactivateAll();
                 break; 
             case CONSULTAPORCODIGO:
                 try {
-                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
-                    nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
-                    apellidosText.setText(cliente.getApellidos());
-                    nombreText.setText(cliente.getNombre()); 
-                    cpText.setText(cliente.getCodigoPostal()); 
-                    localidadText.setText(cliente.getLocalidad());
-                    telefonoText.setText(cliente.getTelefono());
-                    movilText.setText(cliente.getMovil());
-                    faxText.setText(cliente.getFax());
-                    emailText.setText(cliente.getEmail());
-                    totalText.setText(String.valueOf(cliente.getTotal()));
+                    Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
+                    descripcionText.setText(articulo.getDescripcion());
+                    stockText.setText(String.valueOf(articulo.getStock()));
+                    stockText.setText(String.valueOf(articulo.getStock()));
+                    stockMinText.setText(String.valueOf(articulo.getStock()));
+                    precioCompraText.setText(String.valueOf(articulo.getStock()));
+                    PrecioVentaText.setText(String.valueOf(articulo.getStock()));
                 } catch (SQLException | IllegalStateException ex) {
                     codigoText.setText("");
                     JOptionPane.showMessageDialog(
@@ -562,7 +539,7 @@ public class FormArticulo extends javax.swing.JFrame {
                 break;
         }
         
-        focoCodigo();*/
+        focoCodigo();
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
     private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate
@@ -571,6 +548,19 @@ public class FormArticulo extends javax.swing.JFrame {
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                 activateAll();
+            }
+            if(modo == Modo.MODIFICACIONES){
+                try {
+                    Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
+                 } catch (SQLException | IllegalStateException ex) {
+                    JOptionPane.showMessageDialog(
+                        null,                       
+                        "El Articulo buscado no existe",     
+                        "Error",                    
+                        JOptionPane.ERROR_MESSAGE 
+                    );
+                    codigoText.setForeground(Color.RED);
+                }
             }
         } else {
             codigoText.setForeground(Color.RED);
@@ -637,6 +627,46 @@ public class FormArticulo extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_PrecioVentaTextActionPerformed
 
+    private void stockTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_stockTextCaretUpdate
+        String text = stockText.getText();
+        if (esFloat(text)){
+            stockText.setForeground(Color.BLACK);
+        } else {
+            stockText.setForeground(Color.RED);
+        }
+    }//GEN-LAST:event_stockTextCaretUpdate
+
+    private void stockMinTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_stockMinTextCaretUpdate
+        String text = stockMinText.getText();
+        if (esFloat(text)){
+            stockMinText.setForeground(Color.BLACK);
+        } else {
+            stockMinText.setForeground(Color.RED);
+        }
+    }//GEN-LAST:event_stockMinTextCaretUpdate
+
+    private void precioCompraTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_precioCompraTextCaretUpdate
+        String text = precioCompraText.getText();
+        if (esFloat(text)){
+            precioCompraText.setForeground(Color.BLACK);
+        } else {
+            precioCompraText.setForeground(Color.RED);
+        }
+    }//GEN-LAST:event_precioCompraTextCaretUpdate
+
+    private void PrecioVentaTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_PrecioVentaTextCaretUpdate
+        String text = PrecioVentaText.getText();
+        if (esFloat(text)){
+            PrecioVentaText.setForeground(Color.BLACK);
+        } else {
+            PrecioVentaText.setForeground(Color.RED);
+        }
+    }//GEN-LAST:event_PrecioVentaTextCaretUpdate
+
+    private void descripcionTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_descripcionTextCaretUpdate
+        // TODO add your handling code here:
+    }//GEN-LAST:event_descripcionTextCaretUpdate
+
     public void ventanaEntreCodigos(){
     }
     
@@ -665,58 +695,9 @@ public class FormArticulo extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new FormArticulo().setVisible(true));
     }
     
-    //método para comprobar Nombre y Apellido
-    public static boolean nameCheck(String text){
-        return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,15}"); 
-    }
-    
-    //método para comprobar Apellido
-    public static boolean apellidoCheck(String text){
-        return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,35}"); 
-    }
-    
-    //método para comprobar Teléfono, Móvil, Fax
-    public static boolean phoneCheck(String text){
-        
-        if (text == null || text.isBlank()){
-            return true;
-        }        
-        
-        return text.matches("[0-9]{9}");
-    }
-    
-    //método para comprobar Email
-    public static boolean emailCheck(String text){
-        
-        if (text == null || text.isBlank()){
-            return true;
-        }
-        
-        return text.matches("^(?=.{1,20}$)[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    }
-    
     //metodo para Código
     public static boolean codigoCheck(String text){
         return text.matches("[0-9]{6}");
-    }
-    
-    //metodo para comprobar Codigo Postal
-    public static boolean cpCheck(String text){
-        return text.matches("[0-9]{5}");
-    }
-    
-    //metodo para comprobar DNI
-    public static boolean numCheck(String text){
-        return text.matches("[0-9]{8}");
-    }
-    
-    //metodo para comprobar Domicilio
-    public static boolean domicilioCheck(String text){
-        return text.matches("[A-Za-z\\s0-9ºª/]{1,40}");
-    }
-    
-    public static boolean localidadCheck(String text){
-        return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,20}");
     }
     
     public boolean esFloat(String text) {
@@ -729,30 +710,7 @@ public class FormArticulo extends javax.swing.JFrame {
         return false;
     }
 }
-    
-    
-    
-    private String calcularLetraDNI(String num) {
-        if (num == null || num.isEmpty() || ! numCheck(num)) {
-            return "";
-        }
-        
-        String[] letras = {"T", "R", "W", "A", "G", "M", "Y", "F", "P", "D", "X","B", 
-                           "N", "J", "Z", "S", "Q", "V", "H", "L", "C", "K", "E"};
-        
-        try {
-            int numero = Integer.parseInt(num);
-            int resto = numero % 23;
-            return letras[resto];
-        } catch (NumberFormatException e) {
-            return "";
-        }
-    }
-    
- 
-        
    
-    
     public void reset(){
         codigoText.grabFocus();
         codigoText.setText("");
