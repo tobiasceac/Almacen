@@ -790,6 +790,7 @@ public class FormProveedor extends javax.swing.JFrame {
             }
         } else {
             codigoText.setForeground(Color.RED);
+            codigoText.setEnabled(true);            
         }
     }//GEN-LAST:event_codigoTextCaretUpdate
 

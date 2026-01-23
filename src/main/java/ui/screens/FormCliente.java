@@ -32,8 +32,6 @@ public class FormCliente extends javax.swing.JFrame {
      */
     public FormCliente() {
         initComponents();
-        
-        
         desactivateAll();
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar
         setLocationRelativeTo(null); // Centra la ventana al inizializar
@@ -44,8 +42,6 @@ public class FormCliente extends javax.swing.JFrame {
         niflText.setBackground(new Color(240, 240, 240));
         niflText.setFocusable(false);
         niflText.setEnabled(false);
-
-
     }
     
     public void desactivateAll(){
@@ -754,6 +750,7 @@ public class FormCliente extends javax.swing.JFrame {
                         nombreText.setText(cliente.getNombre()); 
                         cpText.setText(cliente.getCodigoPostal()); 
                         localidadText.setText(cliente.getLocalidad());
+                        domicilioText.setText(cliente.getDomicilio());
                         telefonoText.setText(cliente.getTelefono());
                         movilText.setText(cliente.getMovil());
                         faxText.setText(cliente.getFax());
@@ -799,6 +796,9 @@ public class FormCliente extends javax.swing.JFrame {
             }
         } else {
             codigoText.setForeground(Color.RED);
+                desactivateAll();
+                codigoText.setEnabled(true);
+                
         }
     }//GEN-LAST:event_codigoTextCaretUpdate
 
@@ -987,6 +987,18 @@ public class FormCliente extends javax.swing.JFrame {
                 try {
                     
                     Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+                    
+                    nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
+                    apellidosText.setText(cliente.getApellidos());
+                    nombreText.setText(cliente.getNombre()); 
+                    cpText.setText(cliente.getCodigoPostal()); 
+                    localidadText.setText(cliente.getLocalidad());
+                    domicilioText.setText(cliente.getDomicilio());
+                    telefonoText.setText(cliente.getTelefono());
+                    movilText.setText(cliente.getMovil());
+                    faxText.setText(cliente.getFax());
+                    emailText.setText(cliente.getEmail());
+                    totalText.setText(String.valueOf(cliente.getTotal()));
 
                 }catch (ClienteNotFoundException ex) {
                     codigoText.setText("");   
@@ -1009,40 +1021,11 @@ public class FormCliente extends javax.swing.JFrame {
                     );
                 System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
                 }
-            }        
+            }  
     }//GEN-LAST:event_codigoTextFocusLost
 
     private void modificacionesMenuFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_modificacionesMenuFocusLost
-            try{
-                Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
-                nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
-                apellidosText.setText(cliente.getApellidos());
-                nombreText.setText(cliente.getNombre()); 
-                cpText.setText(cliente.getCodigoPostal()); 
-                localidadText.setText(cliente.getLocalidad());
-                telefonoText.setText(cliente.getTelefono());
-                movilText.setText(cliente.getMovil());
-                faxText.setText(cliente.getFax());
-                emailText.setText(cliente.getEmail());
-                totalText.setText(String.valueOf(cliente.getTotal()));
-                        
-            }catch (ClienteNotFoundException ex) {
-                codigoText.setText("");                    
-                JOptionPane.showMessageDialog(
-                    null,                       
-                    "Cliente no encontrado",     
-                    "Error",                    
-                    JOptionPane.ERROR_MESSAGE );
-            } catch(DataAccessException ex) {
-                codigoText.setText("");                    
-                JOptionPane.showMessageDialog(
-                        null, 
-                        "Ha ocurrido un error", 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE
-                );
-                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
-            }
+            
     }//GEN-LAST:event_modificacionesMenuFocusLost
 
   

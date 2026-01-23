@@ -544,9 +544,10 @@ public class FormArticulo extends javax.swing.JFrame {
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                 activateAll();
             }
-            
         } else {
             codigoText.setForeground(Color.RED);
+            codigoText.setEnabled(true);
+
         }
     }//GEN-LAST:event_codigoTextCaretUpdate
 
