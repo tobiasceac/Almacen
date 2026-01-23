@@ -6,6 +6,9 @@ package data.dao;
 
 import data.database.ConexionDB;
 import data.model.Cliente;
+import excepciones.ClienteAlreadyExistsException;
+import excepciones.ClienteNotFoundException;
+import excepciones.DataAccessException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +26,7 @@ public class ClienteDAO {
         this.conn = new ConexionDB();
     }
     
-    public void insertar(Cliente cliente) throws SQLException {
+    public void insertar(Cliente cliente) throws ClienteAlreadyExistsException, DataAccessException {
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
         }
@@ -50,14 +53,14 @@ public class ClienteDAO {
             
             
         } catch (SQLException e) {
-            if (e.getSQLState().startsWith("23")) {
-                throw new IllegalStateException("Cliente Duplicado, ya existe en la base de datos", e);
+            if (e.getSQLState() != null && e.getSQLState().startsWith("23")) {
+                throw new ClienteAlreadyExistsException("Cliente Duplicado, ya existe en la base de datos", e);
             }
-            throw new IllegalStateException(e.getMessage(), e);
+            throw new DataAccessException(e.getMessage(), e);
         }
     }
     
-    public Cliente buscarPorCodigo(String codigo) throws SQLException {
+    public Cliente buscarPorCodigo(String codigo) throws ClienteNotFoundException, DataAccessException {
         if (codigo == null || codigo.isBlank()){
             throw new IllegalArgumentException("El nif es nulo o está vacío");
         }
@@ -71,7 +74,7 @@ public class ClienteDAO {
             try (ResultSet rs = stm.executeQuery()){
                
                 if (!rs.next()) {
-                    throw new IllegalStateException("No existe ningún cliente con ese código");
+                    throw new ClienteNotFoundException("No existe ningún cliente con ese código");
                 }
                 
                 String nifQuery = rs.getString("nif");
@@ -99,13 +102,13 @@ public class ClienteDAO {
             }
             
         } catch (SQLException e) {
-            throw new IllegalStateException("Ha ocurrido un error al acceder a la BdD ", e);
+            throw new DataAccessException("Ha ocurrido un error al acceder a la BdD ", e);
         }
         return c;
     }
     
     
-    public void borrar(String codigo) throws SQLException{
+    public void borrar(String codigo) throws DataAccessException, ClienteNotFoundException {
         if (codigo == null || codigo.isBlank()) {
             throw new IllegalArgumentException("El codigo no puede ser nulo o estar vacio");
         }
@@ -120,11 +123,11 @@ public class ClienteDAO {
             stm.executeUpdate();
 
         } catch (SQLException e) {
-            throw new IllegalStateException("Ha ocurrido un error al acceder a la BdD ", e);
+            throw new DataAccessException("Ha ocurrido un error al acceder a la BdD ", e);
         }
     }
     
-    public void actualizar(Cliente cliente) throws SQLException {
+    public void actualizar(Cliente cliente) throws ClienteNotFoundException, DataAccessException {
          if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
         }
@@ -149,55 +152,9 @@ public class ClienteDAO {
             stm.executeUpdate();
             
         } catch (SQLException e) {
-            throw new SQLException(e.getMessage(), e);
+            throw new DataAccessException("Ha ocurrido un error al acceder a la BdD ", e);            
         }
     }
     
-    public Cliente buscarEntreCodigos(String codigoX, String codigoZ) throws SQLException {
-        if (codigoX == null || codigoX.isBlank() || codigoZ == null || codigoZ.isBlank()){
-            throw new IllegalArgumentException("El nif es nulo o está vacío");
-        }
-        
-        String sql = "SELECT nif, apellidos, nombre, domicilio, codigo_postal, localidad, telefono, movil, fax, email, total_ventas FROM clientes BETWEEN codigo = ? AND codigo = ?";
-        Cliente c = new Cliente();
-        
-        try (PreparedStatement stm = conn.connectDataBase().prepareStatement(sql)){
-            stm.setString(1, codigoX);
-            stm.setString(2, codigoZ);
-            
-            try (ResultSet rs = stm.executeQuery()){
-               
-                if (!rs.next()) {
-                    throw new IllegalStateException("No existe ningún cliente con ese código");
-                }
-                
-                String nifQuery = rs.getString("nif");
-                String apellidosQuery = rs.getString("apellidos");
-                String nombreQuery = rs.getString("nombre");
-                String domicilioQuery = rs.getString("domicilio");
-                String codigo_postalQuery = rs.getString("codigo_postal");
-                String localidadQuery = rs.getString("localidad");
-                String telefonoQuery = rs.getString("telefono");
-                String movilQuery = rs.getString("movil");
-                String faxQuery = rs.getString("fax");
-                String emailQuery = rs.getString("email");
-                Float totalQuery = rs.getFloat("total_ventas");                
-                c.setNif(nifQuery);
-                c.setApellidos(apellidosQuery);
-                c.setNombre(nombreQuery);
-                c.setDomicilio(domicilioQuery);
-                c.setCodigoPostal(codigo_postalQuery);
-                c.setLocalidad(localidadQuery);
-                c.setTelefono(telefonoQuery);
-                c.setMovil(movilQuery);
-                c.setFax(faxQuery);
-                c.setEmail(emailQuery);
-                c.setTotal(totalQuery);
-            }
-            
-        } catch (SQLException e) {
-            throw new IllegalStateException("Ha ocurrido un error al acceder a la BdD ", e);
-        }
-        return c;
-    } 
+ 
 }

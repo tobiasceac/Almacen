@@ -4,6 +4,7 @@
  */
 package data.database;
 
+import excepciones.DataAccessException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,8 +22,11 @@ public class ConexionDB {
        
     }
     
-    public Connection connectDataBase() throws SQLException {
-        Connection connection = DriverManager.getConnection(URL, USER, PWD);
-        return connection;
+    public Connection connectDataBase() throws DataAccessException {
+        try {
+            return DriverManager.getConnection(URL, USER, PWD);
+        } catch (SQLException e) {
+            throw new DataAccessException("No se ha podido conectar a la base de datos", e);
+        }
     }
 }

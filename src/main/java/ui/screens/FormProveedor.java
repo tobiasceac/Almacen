@@ -5,6 +5,9 @@
 package ui.screens;
 
 import data.model.Proveedor;
+import excepciones.DataAccessException;
+import excepciones.ProveedorAlreadyExistsException;
+import excepciones.ProveedorNotFoundException;
 import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -184,6 +187,11 @@ public class FormProveedor extends javax.swing.JFrame {
         codigoText.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 codigoTextCaretUpdate(evt);
+            }
+        });
+        codigoText.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                codigoTextFocusLost(evt);
             }
         });
         codigoText.addActionListener(new java.awt.event.ActionListener() {
@@ -667,116 +675,108 @@ public class FormProveedor extends javax.swing.JFrame {
         if (!errores.isEmpty()) {
             jOptionPane1.showMessageDialog(null, text, "Ventana Error", jOptionPane1.YES_OPTION);
             
-        } 
-        
-        
-        switch(modo) {
-            case ALTA:
-                totalText.setEnabled(false);
-                
-                try {
-                   vm.altaProveedor(
-                            codigoText.getText(), 
-                            nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
-                            apellidosText.getText(), 
-                            nombreText.getText(), 
-                            domicilioText.getText(), 
-                            cpText.getText(), 
-                            localidadText.getText(), 
-                            telefonoText.getText(), 
-                            movilText.getText(), 
-                            faxText.getText(), 
-                            emailText.getText(), 
-                            0
-                    );
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");                    
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error" + ex.getMessage(),     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
+        } else {
+            try{
+                switch(modo) {
+                    case ALTA:
+                        totalText.setEnabled(false);
+
+                           vm.altaProveedor(
+                                    codigoText.getText(), 
+                                    nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
+                                    apellidosText.getText(), 
+                                    nombreText.getText(), 
+                                    domicilioText.getText(), 
+                                    cpText.getText(), 
+                                    localidadText.getText(), 
+                                    telefonoText.getText(), 
+                                    movilText.getText(), 
+                                    faxText.getText(), 
+                                    emailText.getText(), 
+                                    0
+                            );
+
+                        reset();
+                        desactivateAll();
+                        break; 
+                    case BAJA:
+                            vm.bajaProveedor(codigoText.getText());
+
+                            JOptionPane.showMessageDialog(
+                                null,                         
+                                "Proveedor eliminado con exito", 
+                                "Información",                
+                                JOptionPane.INFORMATION_MESSAGE 
+                            );
+
+
+                        reset();
+                        break; 
+                    case MODIFICACIONES: 
+
+                            vm.modificarProveedor(
+                                    codigoText.getText(), 
+                                    nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
+                                    apellidosText.getText(), 
+                                    nombreText.getText(), 
+                                    domicilioText.getText(), 
+                                    cpText.getText(), 
+                                    localidadText.getText(), 
+                                    telefonoText.getText(), 
+                                    movilText.getText(), 
+                                    faxText.getText(), 
+                                    emailText.getText()
+                            );
+                            JOptionPane.showMessageDialog(
+                                null,                         
+                                "Proveedor modificado con exito", 
+                                "Información",                
+                                JOptionPane.INFORMATION_MESSAGE 
+                            );
+
+                        reset();
+                        desactivateAll();
+                        break; 
+                    case CONSULTAPORCODIGO:
+                        
+                            Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
+                            nifnText.setText(proveedor.getNif().substring(0, proveedor.getNif().length() - 1));
+                            apellidosText.setText(proveedor.getApellidos());
+                            nombreText.setText(proveedor.getNombre()); 
+                            cpText.setText(proveedor.getCodigoPostal()); 
+                            localidadText.setText(proveedor.getLocalidad());
+                            telefonoText.setText(proveedor.getTelefono());
+                            movilText.setText(proveedor.getMovil());
+                            faxText.setText(proveedor.getFax());
+                            emailText.setText(proveedor.getEmail());
+                            totalText.setText(String.valueOf(proveedor.getTotal()));
+
+                        break;
                 }
-                reset();
-                desactivateAll();
-                break; 
-            case BAJA:
-                try {
-                    vm.bajaProveedor(codigoText.getText());
-                    
-                    JOptionPane.showMessageDialog(
-                        null,                         
-                        "Proveedor eliminado con exito", 
-                        "Información",                
-                        JOptionPane.INFORMATION_MESSAGE 
-                    );
-                } catch (SQLException | IllegalStateException ex) {
-                        JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error" + ex,     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
-                }
-                
-                reset();
-                break; 
-            case MODIFICACIONES: 
-                
-                try {
-                    vm.modificarProveedor(
-                            codigoText.getText(), 
-                            nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
-                            apellidosText.getText(), 
-                            nombreText.getText(), 
-                            domicilioText.getText(), 
-                            cpText.getText(), 
-                            localidadText.getText(), 
-                            telefonoText.getText(), 
-                            movilText.getText(), 
-                            faxText.getText(), 
-                            emailText.getText()
-                    );
-                    JOptionPane.showMessageDialog(
-                        null,                         
-                        "Proveedor modificado con exito", 
-                        "Información",                
-                        JOptionPane.INFORMATION_MESSAGE 
-                    );
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error",     
-                        "Error",                    
+            } catch (ProveedorAlreadyExistsException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    "Proveedor ya existe",     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch (ProveedorNotFoundException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    "Proveedor no encontrado",     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch(DataAccessException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                        null, 
+                        "Ha ocurrido un error", 
+                        "Error", 
                         JOptionPane.ERROR_MESSAGE
-                    );
-                }
-                reset();
-                desactivateAll();
-                break; 
-            case CONSULTAPORCODIGO:
-                try {
-                    Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
-                    nifnText.setText(proveedor.getNif().substring(0, proveedor.getNif().length() - 1));
-                    apellidosText.setText(proveedor.getApellidos());
-                    nombreText.setText(proveedor.getNombre()); 
-                    cpText.setText(proveedor.getCodigoPostal()); 
-                    localidadText.setText(proveedor.getLocalidad());
-                    telefonoText.setText(proveedor.getTelefono());
-                    movilText.setText(proveedor.getMovil());
-                    faxText.setText(proveedor.getFax());
-                    emailText.setText(proveedor.getEmail());
-                    totalText.setText(String.valueOf(proveedor.getTotal()));
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        ex,     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE 
-                    );
-                }
-                break;
+                );
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+            }
         }
         focoCodigo();
     }//GEN-LAST:event_aceptarButtonActionPerformed
@@ -787,19 +787,6 @@ public class FormProveedor extends javax.swing.JFrame {
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                 activateAll();
-            }
-            if(modo == Modo.MODIFICACIONES){
-                try {
-                    Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
-                 } catch (SQLException | IllegalStateException ex) {
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "El Proveedor buscado no existe",     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE 
-                    );
-                    codigoText.setForeground(Color.RED);
-                }
             }
         } else {
             codigoText.setForeground(Color.RED);
@@ -933,17 +920,42 @@ public class FormProveedor extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
-        EntreCodigos ec = new EntreCodigos((cod1, cod2) -> vm.jasperProveedorEntreCodigos(cod2, cod2));
+        desactivateAll();        
+        EntreCodigos ec = new EntreCodigos((cod1, cod2) -> {
+            try {
+                vm.jasperProveedorEntreCodigos(cod2, cod2);
+            } catch (JRException ex) {
+                System.getLogger(FormProveedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (SQLException ex) {
+                System.getLogger(FormProveedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (DataAccessException ex) {
+                System.getLogger(FormProveedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        });
         ec.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-
+        desactivateAll();        
+        try {
+            vm.jasperProveedorGrafico();
+                        JOptionPane.showMessageDialog(
+                        null,                       
+                        "¡PDF descargado correctamente!",     
+                        "Realizado",                    
+                        JOptionPane.INFORMATION_MESSAGE 
+                    );
+        } catch (JRException | SQLException ex) {
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (DataAccessException ex) {
+            System.getLogger(FormProveedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }     
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void ListadoPorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ListadoPorCodigoJasperActionPerformed
-         try {
+        desactivateAll();        
+        try {
             vm.jasperProveedorPorCodigo();
                         JOptionPane.showMessageDialog(
                         null,                       
@@ -953,8 +965,35 @@ public class FormProveedor extends javax.swing.JFrame {
                     );
         } catch (JRException | SQLException ex) {
             System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (DataAccessException ex) {
+            System.getLogger(FormProveedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }  
     }//GEN-LAST:event_ListadoPorCodigoJasperActionPerformed
+
+    private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
+            if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
+                try {
+                    Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
+                 } catch (ProveedorNotFoundException ex) {
+                    codigoText.setText("");                    
+                    JOptionPane.showMessageDialog(
+                        null,                       
+                        "Cliente no encontrado",     
+                        "Error",                    
+                        JOptionPane.ERROR_MESSAGE );
+                } catch(DataAccessException ex) {
+                    codigoText.setText("");                    
+                    JOptionPane.showMessageDialog(
+                            null, 
+                            "Ha ocurrido un error", 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+                }
+                codigoText.setForeground(Color.RED);                
+            }
+    }//GEN-LAST:event_codigoTextFocusLost
 
     public void ventanaEntreCodigos(){
     }

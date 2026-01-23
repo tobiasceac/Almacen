@@ -19,10 +19,11 @@ import ui.viewmodel.ClienteViewModel;
 public class EntreCodigos extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EntreCodigos.class.getName());
-    private AccionJasperEntreCodigos accionJasper;
+    private final AccionJasperEntreCodigos accionJasper;
 
     /**
      * Creates new form EntreCodigos
+     * @param accionJasper
      */
     public EntreCodigos(AccionJasperEntreCodigos accionJasper) {
         this.accionJasper = accionJasper;

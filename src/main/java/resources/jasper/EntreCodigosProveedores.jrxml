@@ -32,18 +32,18 @@
 			<frame>
 				<reportElement mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#006699" uuid="65e9f87f-28c2-4384-a181-4051e4e53f1d"/>
 				<staticText>
-					<reportElement x="20" y="20" width="234" height="43" forecolor="#FFFFFF" uuid="7bce9c5e-c08c-4fb7-bb9e-ea19d31798af"/>
+					<reportElement x="20" y="20" width="260" height="43" forecolor="#FFFFFF" uuid="7bce9c5e-c08c-4fb7-bb9e-ea19d31798af"/>
 					<textElement>
 						<font size="34" isBold="true"/>
 					</textElement>
-					<text><![CDATA[TITLE]]></text>
+					<text><![CDATA[Entre Codigos]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="395" y="43" width="180" height="20" forecolor="#FFFFFF" uuid="8e81fe8b-25f9-4836-aa9f-e7aa52cff789"/>
 					<textElement textAlignment="Right">
 						<font size="14" isBold="false"/>
 					</textElement>
-					<text><![CDATA[Add a description here]]></text>
+					<text><![CDATA[Proveedores en la BD]]></text>
 				</staticText>
 			</frame>
 		</band>

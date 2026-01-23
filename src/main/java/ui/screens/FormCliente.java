@@ -5,6 +5,9 @@
 package ui.screens;
 
 import data.model.Cliente;
+import excepciones.ClienteAlreadyExistsException;
+import excepciones.ClienteNotFoundException;
+import excepciones.DataAccessException;
 import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -188,6 +191,11 @@ public class FormCliente extends javax.swing.JFrame {
                 codigoTextCaretUpdate(evt);
             }
         });
+        codigoText.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                codigoTextFocusLost(evt);
+            }
+        });
         codigoText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 codigoTextActionPerformed(evt);
@@ -369,6 +377,11 @@ public class FormCliente extends javax.swing.JFrame {
         jMenu2.add(bajasMenu);
 
         modificacionesMenu.setText("Modificaciones");
+        modificacionesMenu.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                modificacionesMenuFocusLost(evt);
+            }
+        });
         modificacionesMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modificacionesMenuActionPerformed(evt);
@@ -607,7 +620,7 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void aceptarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarButtonActionPerformed
-
+        
         String text = "Errores en: \n";
         ArrayList<String> errores = new ArrayList<>();
 
@@ -667,120 +680,113 @@ public class FormCliente extends javax.swing.JFrame {
         
         if (!errores.isEmpty()) {
             jOptionPane1.showMessageDialog(null, text, "Ventana Error", jOptionPane1.YES_OPTION);
-            
-        } 
-        
-        switch(modo) {
-            case ALTA:
-                totalText.setEnabled(false);
-                
-                try {
-                   vm.altaCLiente(
-                            codigoText.getText(), 
-                            nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
-                            apellidosText.getText(), 
-                            nombreText.getText(), 
-                            domicilioText.getText(), 
-                            cpText.getText(), 
-                            localidadText.getText(), 
-                            telefonoText.getText(), 
-                            movilText.getText(), 
-                            faxText.getText(), 
-                            emailText.getText(), 
-                            0
-                    );
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");                    
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error" + ex.getMessage(),     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
-                }
-                reset();
-                desactivateAll();
-                break; 
-            case BAJA:
-                try {
-                    vm.bajaCliente(codigoText.getText());
-                    
-                    JOptionPane.showMessageDialog(
-                        null,                         
-                        "Cliente eliminado con exito", 
-                        "Información",                
-                        JOptionPane.INFORMATION_MESSAGE 
-                    );
-                } catch (SQLException | IllegalStateException ex) {
+        } else {
+            try{
+                switch(modo) {
+                case ALTA:
+                    totalText.setEnabled(false);
+
+                       vm.altaCLiente(
+                                codigoText.getText(), 
+                                nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
+                                apellidosText.getText(), 
+                                nombreText.getText(), 
+                                domicilioText.getText(), 
+                                cpText.getText(), 
+                                localidadText.getText(), 
+                                telefonoText.getText(), 
+                                movilText.getText(), 
+                                faxText.getText(), 
+                                emailText.getText(), 
+                                0
+                        );
+
+                    reset();
+                    desactivateAll();
+                    break; 
+
+
+                case BAJA:
+
+                        vm.bajaCliente(codigoText.getText());
+
                         JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error" + ex,     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
+                            null,                         
+                            "Cliente eliminado con exito", 
+                            "Información",                
+                            JOptionPane.INFORMATION_MESSAGE 
+                        );
+
+                    reset();
+                    break; 
+
+                case MODIFICACIONES: 
+
+                        vm.modificarCliente(
+                                codigoText.getText(), 
+                                nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
+                                apellidosText.getText(), 
+                                nombreText.getText(), 
+                                domicilioText.getText(), 
+                                cpText.getText(), 
+                                localidadText.getText(), 
+                                telefonoText.getText(), 
+                                movilText.getText(), 
+                                faxText.getText(), 
+                                emailText.getText()
+                        );
+                        JOptionPane.showMessageDialog(
+                            null,                         
+                            "Cliente modificado con exito", 
+                            "Información",                
+                            JOptionPane.INFORMATION_MESSAGE 
+                        );
+
+                    reset();
+                    desactivateAll();
+                    break; 
+
+                case CONSULTAPORCODIGO:
+
+                        Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+                        nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
+                        apellidosText.setText(cliente.getApellidos());
+                        nombreText.setText(cliente.getNombre()); 
+                        cpText.setText(cliente.getCodigoPostal()); 
+                        localidadText.setText(cliente.getLocalidad());
+                        telefonoText.setText(cliente.getTelefono());
+                        movilText.setText(cliente.getMovil());
+                        faxText.setText(cliente.getFax());
+                        emailText.setText(cliente.getEmail());
+                        totalText.setText(String.valueOf(cliente.getTotal()));
+
+                    break;
                 }
-                
-                reset();
-                break; 
-            case MODIFICACIONES: 
-                
-                try {
-                    
-                    vm.modificarCliente(
-                            codigoText.getText(), 
-                            nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
-                            apellidosText.getText(), 
-                            nombreText.getText(), 
-                            domicilioText.getText(), 
-                            cpText.getText(), 
-                            localidadText.getText(), 
-                            telefonoText.getText(), 
-                            movilText.getText(), 
-                            faxText.getText(), 
-                            emailText.getText()
-                    );
-                    JOptionPane.showMessageDialog(
-                        null,                         
-                        "Cliente modificado con exito", 
-                        "Información",                
-                        JOptionPane.INFORMATION_MESSAGE 
-                    );
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        ex,     
-                        "Error",                    
+            } catch (ClienteAlreadyExistsException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    "Cliente ya existe",     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            }catch (ClienteNotFoundException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    "Cliente no encontrado",     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch(DataAccessException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                        null, 
+                        "Ha ocurrido un error", 
+                        "Error", 
                         JOptionPane.ERROR_MESSAGE
-                    );
-                }
-                reset();
-                desactivateAll();
-                break; 
-            case CONSULTAPORCODIGO:
-                try {
-                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
-                    nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
-                    apellidosText.setText(cliente.getApellidos());
-                    nombreText.setText(cliente.getNombre()); 
-                    cpText.setText(cliente.getCodigoPostal()); 
-                    localidadText.setText(cliente.getLocalidad());
-                    telefonoText.setText(cliente.getTelefono());
-                    movilText.setText(cliente.getMovil());
-                    faxText.setText(cliente.getFax());
-                    emailText.setText(cliente.getEmail());
-                    totalText.setText(String.valueOf(cliente.getTotal()));
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error",     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE 
-                    );
-                    
-                }
-                break;
+                );
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+            }
         }
-        
         focoCodigo();
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
@@ -790,19 +796,6 @@ public class FormCliente extends javax.swing.JFrame {
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                 activateAll();
-            }
-            if(modo == Modo.MODIFICACIONES){
-                try {
-                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
-                 } catch (SQLException | IllegalStateException ex) {
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "El Cliente buscado no existe",     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE 
-                    );
-                    codigoText.setForeground(Color.RED);
-                }
             }
         } else {
             codigoText.setForeground(Color.RED);
@@ -937,18 +930,43 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
+        desactivateAll();       
         EntreCodigos ec = new EntreCodigos( 
-          (cod1, cod2) -> vm.jasperClienteEntreCodigos(cod1, cod2)
+          (cod1, cod2) -> {
+            try {
+                vm.jasperClienteEntreCodigos(cod1, cod2);
+            } catch (JRException ex) {
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (SQLException ex) {
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (DataAccessException ex) {
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
         );
         ec.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-         
+        desactivateAll();        
+        try {
+            vm.jasperClienteGrafico();
+            JOptionPane.showMessageDialog(
+                        null,                       
+                        "¡PDF descargado correctamente!",     
+                        "Realizado",                    
+                        JOptionPane.INFORMATION_MESSAGE 
+                    );
+        } catch (JRException | SQLException ex) {
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (DataAccessException ex) {
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void PorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PorCodigoJasperActionPerformed
+        desactivateAll();
         try {
             vm.jasperClientePorCodigo();
             JOptionPane.showMessageDialog(
@@ -959,8 +977,73 @@ public class FormCliente extends javax.swing.JFrame {
                     );
         } catch (JRException | SQLException ex) {
             System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (DataAccessException ex) {
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_PorCodigoJasperActionPerformed
+
+    private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
+            if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
+                try {
+                    
+                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+
+                }catch (ClienteNotFoundException ex) {
+                    codigoText.setText("");   
+                    desactivateAll();
+                    modoForm();
+                    JOptionPane.showMessageDialog(
+                        null,                       
+                        "Cliente no encontrado",     
+                        "Error",                    
+                        JOptionPane.ERROR_MESSAGE );
+                } catch(DataAccessException ex) {
+                    codigoText.setText("");   
+                    desactivateAll();
+                    modoForm();                    
+                    JOptionPane.showMessageDialog(
+                            null, 
+                            "Ha ocurrido un error", 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+                }
+            }        
+    }//GEN-LAST:event_codigoTextFocusLost
+
+    private void modificacionesMenuFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_modificacionesMenuFocusLost
+            try{
+                Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+                nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
+                apellidosText.setText(cliente.getApellidos());
+                nombreText.setText(cliente.getNombre()); 
+                cpText.setText(cliente.getCodigoPostal()); 
+                localidadText.setText(cliente.getLocalidad());
+                telefonoText.setText(cliente.getTelefono());
+                movilText.setText(cliente.getMovil());
+                faxText.setText(cliente.getFax());
+                emailText.setText(cliente.getEmail());
+                totalText.setText(String.valueOf(cliente.getTotal()));
+                        
+            }catch (ClienteNotFoundException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    "Cliente no encontrado",     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch(DataAccessException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                        null, 
+                        "Ha ocurrido un error", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE
+                );
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+            }
+    }//GEN-LAST:event_modificacionesMenuFocusLost
 
   
     

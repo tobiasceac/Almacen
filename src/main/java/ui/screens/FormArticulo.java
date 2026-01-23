@@ -5,15 +5,15 @@
 package ui.screens;
 
 import data.model.Articulo;
-import data.model.Cliente;
+import excepciones.ArticuloAlreadyExistsException;
+import excepciones.ArticuloNotFoundException;
+import excepciones.DataAccessException;
 import java.awt.Color;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
-import static ui.screens.FormCliente.codigoCheck;
 import ui.viewmodel.ArticuloViewModel;
-import ui.viewmodel.ClienteViewModel;
 
 /**
  *
@@ -148,6 +148,11 @@ public class FormArticulo extends javax.swing.JFrame {
         codigoText.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 codigoTextCaretUpdate(evt);
+            }
+        });
+        codigoText.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                codigoTextFocusLost(evt);
             }
         });
 
@@ -445,101 +450,90 @@ public class FormArticulo extends javax.swing.JFrame {
         if (!errores.isEmpty()) {
             jOptionPane1.showMessageDialog(null, text, "Ventana Error", jOptionPane1.YES_OPTION);
             
-        } 
-        
-        switch(modo) {
-            case ALTA:
-                try {
-                   vm.altaArticulo(
-                           codigoText.getText(),
-                           descripcionText.getText(),
-                           Float.parseFloat(stockText.getText()),
-                           Float.parseFloat(stockMinText.getText()),
-                           Float.parseFloat(precioCompraText.getText()),
-                           Float.parseFloat(PrecioVentaText.getText())
-                   );
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");                    
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error" + ex.getMessage(),     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
-                }
-                reset();
-                desactivateAll();
-                break; 
-            case BAJA:
-                try {
-                    vm.bajaArticulo(codigoText.getText());
-                    
-                    JOptionPane.showMessageDialog(
-                        null,                         
-                        "Cliente eliminado con exito", 
-                        "Información",                
-                        JOptionPane.INFORMATION_MESSAGE 
-                    );
-                } catch (SQLException | IllegalStateException ex) {
-                        JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error" + ex,     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
-                }
-                
-                reset();
-                break; 
-            case MODIFICACIONES: 
-                try {
-                    vm.modificarArticulo(
-                           codigoText.getText(),
-                           descripcionText.getText(),
-                           Float.parseFloat(stockText.getText()),
-                           Float.parseFloat(stockMinText.getText()),
-                           Float.parseFloat(precioCompraText.getText()),
-                           Float.parseFloat(PrecioVentaText.getText())
-                   );
-                    JOptionPane.showMessageDialog(
-                        null,                         
-                        "Cliente modificado con exito", 
-                        "Información",                
-                        JOptionPane.INFORMATION_MESSAGE 
-                    );
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        ex,     
-                        "Error",                    
+        } else {
+            try{
+                switch(modo) {
+                    case ALTA:
+                           vm.altaArticulo(
+                                   codigoText.getText(),
+                                   descripcionText.getText(),
+                                   Float.parseFloat(stockText.getText()),
+                                   Float.parseFloat(stockMinText.getText()),
+                                   Float.parseFloat(precioCompraText.getText()),
+                                   Float.parseFloat(PrecioVentaText.getText())
+                           );
+
+                        reset();
+                        desactivateAll();
+                        break; 
+                    case BAJA:
+                            vm.bajaArticulo(codigoText.getText());
+
+                            JOptionPane.showMessageDialog(
+                                null,                         
+                                "Cliente eliminado con exito", 
+                                "Información",                
+                                JOptionPane.INFORMATION_MESSAGE 
+                            );
+
+                        reset();
+                        break; 
+                    case MODIFICACIONES: 
+                            vm.modificarArticulo(
+                                   codigoText.getText(),
+                                   descripcionText.getText(),
+                                   Float.parseFloat(stockText.getText()),
+                                   Float.parseFloat(stockMinText.getText()),
+                                   Float.parseFloat(precioCompraText.getText()),
+                                   Float.parseFloat(PrecioVentaText.getText())
+                           );
+                            JOptionPane.showMessageDialog(
+                                null,                         
+                                "Cliente modificado con exito", 
+                                "Información",                
+                                JOptionPane.INFORMATION_MESSAGE 
+                            );
+
+                        reset();
+                        desactivateAll();
+                        break; 
+                    case CONSULTAPORCODIGO:
+                            Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
+                            descripcionText.setText(articulo.getDescripcion());
+                            stockText.setText(String.valueOf(articulo.getStock()));
+                            stockText.setText(String.valueOf(articulo.getStock()));
+                            stockMinText.setText(String.valueOf(articulo.getStock()));
+                            precioCompraText.setText(String.valueOf(articulo.getStock()));
+                            PrecioVentaText.setText(String.valueOf(articulo.getStock()));
+
+                        break;
+                        
+                } 
+            } catch (ArticuloAlreadyExistsException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    ex.getMessage(),     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch (ArticuloNotFoundException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    ex.getMessage(),     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch(DataAccessException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                        null, 
+                        ex.getMessage(), 
+                        "Error", 
                         JOptionPane.ERROR_MESSAGE
-                    );
-                }
-                
-                reset();
-                desactivateAll();
-                break; 
-            case CONSULTAPORCODIGO:
-                try {
-                    Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
-                    descripcionText.setText(articulo.getDescripcion());
-                    stockText.setText(String.valueOf(articulo.getStock()));
-                    stockText.setText(String.valueOf(articulo.getStock()));
-                    stockMinText.setText(String.valueOf(articulo.getStock()));
-                    precioCompraText.setText(String.valueOf(articulo.getStock()));
-                    PrecioVentaText.setText(String.valueOf(articulo.getStock()));
-                } catch (SQLException | IllegalStateException ex) {
-                    codigoText.setText("");
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Ha ocurrido un error",     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE 
-                    );
-                    
-                }
-                break;
-        }
-        
+                );
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+            }
+        } 
         focoCodigo();
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
@@ -550,19 +544,7 @@ public class FormArticulo extends javax.swing.JFrame {
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                 activateAll();
             }
-            if(modo == Modo.MODIFICACIONES){
-                try {
-                    Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
-                 } catch (SQLException | IllegalStateException ex) {
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "El Articulo buscado no existe",     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE 
-                    );
-                    codigoText.setForeground(Color.RED);
-                }
-            }
+            
         } else {
             codigoText.setForeground(Color.RED);
         }
@@ -601,8 +583,19 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
+        desactivateAll();        
         EntreCodigos ec = new EntreCodigos( 
-          (cod1, cod2) -> vm.jasperArticuloEntreCodigos(cod1, cod2)
+          (cod1, cod2) -> {
+            try {
+                vm.jasperArticuloEntreCodigos(cod1, cod2);
+            } catch (JRException ex) {
+                System.getLogger(FormArticulo.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (SQLException ex) {
+                System.getLogger(FormArticulo.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (DataAccessException ex) {
+                System.getLogger(FormArticulo.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
         );
         ec.setVisible(true);
         this.dispose();
@@ -610,11 +603,11 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-        preparacionModos();
-        modo = Modo.GRAFICOS;  
+        desactivateAll();        
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void ListadoPorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ListadoPorCodigoJasperActionPerformed
+        desactivateAll();        
         try {
             vm.jasperArticuloPorCodigo();
             JOptionPane.showMessageDialog(
@@ -625,6 +618,8 @@ public class FormArticulo extends javax.swing.JFrame {
                     );
         } catch (JRException | SQLException ex) {
             System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (DataAccessException ex) {
+            System.getLogger(FormArticulo.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_ListadoPorCodigoJasperActionPerformed
 
@@ -688,6 +683,31 @@ public class FormArticulo extends javax.swing.JFrame {
             descripcionText.setForeground(Color.RED);
         }
     }//GEN-LAST:event_descripcionTextCaretUpdate
+
+    private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
+        if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
+            try {
+                Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
+             } catch (ArticuloNotFoundException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    ex.getMessage(),     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch(DataAccessException ex) {
+                codigoText.setText("");                    
+                JOptionPane.showMessageDialog(
+                        null, 
+                        ex.getMessage(), 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE
+                );
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+            }
+            codigoText.setForeground(Color.RED);                
+        }
+    }//GEN-LAST:event_codigoTextFocusLost
 
     public void ventanaEntreCodigos(){
     }

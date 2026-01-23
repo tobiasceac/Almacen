@@ -5,8 +5,11 @@
 package ui.viewmodel;
 
 import data.dao.ClienteDAO;
-import data.jasper.JasperCliente;
+import data.jasper.JasperBase;
 import data.model.Cliente;
+import excepciones.ClienteAlreadyExistsException;
+import excepciones.ClienteNotFoundException;
+import excepciones.DataAccessException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +22,21 @@ import net.sf.jasperreports.engine.JRException;
 public class ClienteViewModel {
   
    private final ClienteDAO clienteDAO;
-   private final JasperCliente jCliente;
+   private final JasperBase jCliente;
+   
+   private final String rutaPorCodigo ="src/main/java/resources/jasper/ListadoPorCodigoClientes.jasper";
+   private final String rutaPrintPorCodigo ="src/main/java/resources/PDF/Listados Por Codigos Clientes.pdf";
+
+   private final String rutaEntreCodigo ="src/main/java/resources/jasper/EntreCodigosClientes.jasper";
+   private final String rutaPrintEntreCodigo ="src/main/java/resources/PDF/Entre Codigos Clientes.pdf";
+
+   private final String rutaGrafico ="src/main/java/resources/jasper/GraficoCliente.jasper";
+   private final String rutaPrintGrafico ="src/main/java/resources/PDF/Grafico Cliente.pdf";
+   
    
    public ClienteViewModel(){
         this.clienteDAO = new ClienteDAO();
-        this.jCliente = new JasperCliente();
+        this.jCliente = new JasperBase();
    }
    
    public void altaCLiente (
@@ -40,17 +53,17 @@ public class ClienteViewModel {
            String email, 
            float total
    ) throws 
-            SQLException {
+            ClienteAlreadyExistsException, DataAccessException {
        
        Cliente cliente = new Cliente(codigo, nif, apellidos, nombre, domicilio, codigoPostal, localidad, telefono, movil, fax, email, total);
        clienteDAO.insertar(cliente);
    }
    
-    public Cliente consultaPorCodigo(String codigo)throws SQLException {
+    public Cliente consultaPorCodigo(String codigo)throws ClienteNotFoundException, DataAccessException {
        return clienteDAO.buscarPorCodigo(codigo);
    }
    
-   public void bajaCliente(String codigo) throws SQLException {
+   public void bajaCliente(String codigo) throws DataAccessException, ClienteNotFoundException {
        clienteDAO.borrar(codigo);
    }
    
@@ -67,21 +80,17 @@ public class ClienteViewModel {
            String fax, 
            String email
    ) throws 
-            SQLException{
+            ClienteNotFoundException, DataAccessException{
        
        Cliente cliente = new Cliente(codigo, nif, apellidos, nombre, domicilio, codigoPostal, localidad, telefono, movil, fax, email);
        clienteDAO.actualizar(cliente);
    }
    
-   public Cliente consultaEntreCodigos(String codigoX, String codigoZ) throws SQLException {
-       return clienteDAO.buscarEntreCodigos(codigoX, codigoZ);
-    }
-   
-   public void jasperClientePorCodigo() throws JRException, SQLException{
-       jCliente.jListadoPorCodigo();
+   public void jasperClientePorCodigo() throws JRException, SQLException, DataAccessException{
+       jCliente.jListadoPorCodigo(rutaPorCodigo, rutaPrintPorCodigo);
    }
    
-   public void jasperClienteEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException{
+   public void jasperClienteEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException, DataAccessException{
        Map<String, Object> parametros = new HashMap<>();
        
        int cod1 = Integer.parseInt(codigoUno);
@@ -91,7 +100,10 @@ public class ClienteViewModel {
        parametros.put("codigo2", cod2);
 
        
-       jCliente.jEntreCodigos(parametros);
+       jCliente.jEntreCodigos(parametros, rutaEntreCodigo, rutaPrintEntreCodigo);
    }
    
+   public void jasperClienteGrafico() throws JRException, SQLException, DataAccessException{
+       jCliente.jGrafico(rutaGrafico, rutaPrintGrafico);
+   }
 }

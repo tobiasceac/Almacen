@@ -5,6 +5,7 @@
 package data.jasper;
 
 import data.database.ConexionDB;
+import excepciones.DataAccessException;
 import java.sql.SQLException;
 import java.util.Map;
 import net.sf.jasperreports.engine.JRException;
@@ -13,41 +14,36 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
  * @author tobias
  */
-public class JasperCliente {
-    private ConexionDB conn;
+public class JasperBase {
+    private final ConexionDB conn;
 
-    public JasperCliente() {
+    public JasperBase() {
         this.conn = new ConexionDB();
     }
     
-    private void jasperMethods(String ruta)throws JRException, SQLException{
+    private void jasperMethods(String ruta, String rutaPrint)throws JRException, SQLException, DataAccessException{
         JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(ruta);
         JasperPrint print = JasperFillManager.fillReport(report, null, conn.connectDataBase());
-        JasperExportManager.exportReportToPdfFile(print, "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/PDF/Listados Por Codigos Clientes.pdf");
-    }
-
-    public void jListadoPorCodigo() throws JRException, SQLException{
-        String rutaJasper ="/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/ListadoPorCodigoClientes.jasper";
-
-        jasperMethods(rutaJasper);
+        JasperExportManager.exportReportToPdfFile(print, rutaPrint);
     }
     
-    public void jEntreCodigos(Map<String, Object> parametros) throws JRException, SQLException{
-        String rutaJasper ="/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/jasper/EntreCodigosClientes.jasper";        
+    public void jListadoPorCodigo(String rutaJasper, String rutaPrint) throws JRException, SQLException, DataAccessException{
+        jasperMethods(rutaJasper, rutaPrint);
+    }
+    
+    public void jEntreCodigos(Map<String, Object> parametros, String rutaJasper, String rutaPrint) throws JRException, SQLException, DataAccessException{
         JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(rutaJasper);
         JasperPrint print = JasperFillManager.fillReport(report, parametros, conn.connectDataBase());
-        JasperExportManager.exportReportToPdfFile(print, "/Users/tobias/NetBeansProjects/Almacen/src/main/java/resources/PDF/Entre Codigos Clientes.pdf");
+        JasperExportManager.exportReportToPdfFile(print, rutaPrint);
     }   
     
-    public void jGrafico() throws JRException, SQLException{
-       //TODO
-    }  
-    
+    public void jGrafico(String rutaJasper, String rutaPrint) throws JRException, SQLException, DataAccessException{
+        jasperMethods(rutaJasper, rutaPrint);
+    } 
     
 }

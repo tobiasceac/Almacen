@@ -5,8 +5,11 @@
 package ui.viewmodel;
 
 import data.dao.ArticuloDAO;
-import data.jasper.JasperArticulo;
+import data.jasper.JasperBase;
 import data.model.Articulo;
+import excepciones.ArticuloAlreadyExistsException;
+import excepciones.ArticuloNotFoundException;
+import excepciones.DataAccessException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +21,20 @@ import net.sf.jasperreports.engine.JRException;
  */
 public class ArticuloViewModel {
    private final ArticuloDAO articuloDAO;
-   private final JasperArticulo jArticulo;
+   private final JasperBase jArticulo;
 
+   private final String rutaPorCodigo ="src/main/java/resources/jasper/ListadoPorCodigoArticulos.jasper";
+   private final String rutaPrintPorCodigo ="src/main/java/resources/PDF/Listados Por Codigos Articulos.pdf";
+
+   private final String rutaEntreCodigo ="src/main/java/resources/jasper/EntreCodigosArticulos.jasper";
+   private final String rutaPrintEntreCodigo ="src/main/java/resources/PDF/Entre Codigos Articulos.pdf";
+
+   private final String rutaGrafico ="src/main/java/resources/jasper/GraficoArticulo.jasper";
+   private final String rutaPrintGrafico ="src/main/java/resources/PDF/Grafico Articulo.pdf";
    
    public ArticuloViewModel(){
         this.articuloDAO = new ArticuloDAO();
-        this.jArticulo = new JasperArticulo();
+        this.jArticulo = new JasperBase();
 
    }
    
@@ -35,17 +46,17 @@ public class ArticuloViewModel {
            float precioCompra, 
            float precioVenta
    ) throws 
-            SQLException {
+            ArticuloAlreadyExistsException, DataAccessException {
        
        Articulo articulo = new Articulo(codigo, descripcion, stock, stockMinimo, precioCompra, precioVenta);
        articuloDAO.insertar(articulo);
    }
    
-    public Articulo consultaPorCodigo(String codigo)throws SQLException {
+    public Articulo consultaPorCodigo(String codigo)throws ArticuloNotFoundException, DataAccessException {
        return articuloDAO.buscarPorCodigo(codigo);
    }
    
-   public void bajaArticulo(String codigo) throws SQLException {
+   public void bajaArticulo(String codigo) throws ArticuloNotFoundException, ArticuloNotFoundException, DataAccessException {
        articuloDAO.borrar(codigo);
    }
    
@@ -57,21 +68,18 @@ public class ArticuloViewModel {
            float precioCompra, 
            float precioVenta
    ) throws 
-            SQLException{
+            DataAccessException, ArticuloNotFoundException{
        
        Articulo articulo = new Articulo(codigo, descripcion, stock, stockMinimo, precioCompra, precioVenta);
        articuloDAO.actualizar(articulo);
    }
    
-   public Articulo consultaEntreCodigos(String codigoX, String codigoZ) throws SQLException {
-       return articuloDAO.buscarEntreCodigos(codigoX, codigoZ);
-    }
    
-   public void jasperArticuloPorCodigo() throws JRException, SQLException{
-       jArticulo.jListadoPorCodigo();
+   public void jasperArticuloPorCodigo() throws JRException, SQLException, DataAccessException{
+       jArticulo.jListadoPorCodigo(rutaPorCodigo, rutaPrintPorCodigo);
    }
    
-   public void jasperArticuloEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException{
+   public void jasperArticuloEntreCodigos(String codigoUno, String codigoDos) throws JRException, SQLException, DataAccessException{
        Map<String, Object> parametros = new HashMap<>();
        
        int cod1 = Integer.parseInt(codigoUno);
@@ -81,7 +89,11 @@ public class ArticuloViewModel {
        parametros.put("codigo2", cod2);
 
        
-       jArticulo.jEntreCodigos(parametros);
+       jArticulo.jEntreCodigos(parametros, rutaEntreCodigo, rutaPrintEntreCodigo);
    }
+   
+   public void jasperArticuloGrafico() throws JRException, SQLException, DataAccessException{
+       jArticulo.jGrafico(rutaGrafico, rutaPrintGrafico);
+   }   
    
 }
