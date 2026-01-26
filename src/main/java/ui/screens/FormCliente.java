@@ -16,13 +16,34 @@ import net.sf.jasperreports.engine.JRException;
 import ui.viewmodel.ClienteViewModel;
 
 /**
- *
+ * Formulario principal para la gestión CRUD de clientes.
+ * 
+ * <p>Esta ventana permite realizar las operaciones de Alta, Baja, Modificación
+ * y Consulta de clientes. Utiliza un sistema basado en modos que determina
+ * qué campos están habilitados y qué acción se ejecutará al pulsar Aceptar.</p>
+ * 
+ * <p>El formulario incluye validación en tiempo real de todos los campos,
+ * mostrando los datos inválidos en rojo y los válidos en negro. También
+ * genera automáticamente la letra del DNI español según el algoritmo oficial.</p>
+ * 
  * @author jfeyj
+ * @see ClienteViewModel
+ * @see data.model.Cliente
  */
 public class FormCliente extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormCliente.class.getName());
     
+    /**
+     * Enum que representa los diferentes modos de operación del formulario.
+     * 
+     * <ul>
+     *   <li>ALTA: Modo de inserción de nuevos clientes</li>
+     *   <li>BAJA: Modo de eliminación de clientes existentes</li>
+     *   <li>MODIFICACIONES: Modo de actualización de datos de clientes</li>
+     *   <li>CONSULTAPORCODIGO: Modo de búsqueda y visualización de clientes</li>
+     * </ul>
+     */
     private enum Modo {ALTA, BAJA, MODIFICACIONES, CONSULTAPORCODIGO};
     private Modo modo;
     private ClienteViewModel vm = new ClienteViewModel();
@@ -44,6 +65,13 @@ public class FormCliente extends javax.swing.JFrame {
         niflText.setEnabled(false);
     }
     
+    /**
+     * Deshabilita todos los campos y botones del formulario.
+     * 
+     * <p>Este método se utiliza para resetear el formulario a su estado inicial,
+     * donde ningún campo está disponible para edición hasta que el usuario
+     * seleccione una operación desde el menú.</p>
+     */
     public void desactivateAll(){
         codigoText.setEnabled(false);
         nifnText.setEnabled(false);
@@ -62,6 +90,12 @@ public class FormCliente extends javax.swing.JFrame {
         salirButton.setEnabled(false);
     }
     
+    /**
+     * Habilita todos los campos y botones del formulario.
+     * 
+     * <p>Este método activa todos los controles para permitir la entrada completa
+     * de datos, típicamente usado en el modo ALTA después de ingresar un código válido.</p>
+     */
     public void activateAll(){
         codigoText.setEnabled(true);
         nifnText.setEnabled(true);
@@ -80,6 +114,13 @@ public class FormCliente extends javax.swing.JFrame {
     }
     
     // Habilita los campos necesarios para las bases de datos
+    /**
+     * Habilita solo los campos necesarios para iniciar una operación CRUD.
+     * 
+     * <p>Este método activa únicamente el campo de código y los botones de acción
+     * (Aceptar, Cancelar, Salir), dejando deshabilitados los demás campos hasta
+     * que se ingrese un código válido o se complete una validación específica del modo.</p>
+     */
     public void modoForm(){
         codigoText.setEnabled(true);
         aceptarButton.setEnabled(true);
@@ -87,6 +128,13 @@ public class FormCliente extends javax.swing.JFrame {
         salirButton.setEnabled(true);
     }
     
+    /**
+     * Hace los campos de solo lectura (para consultas).
+     * 
+     * <p>Este método deshabilita la edición de todos los campos de datos,
+     * permitiendo solo su visualización. Se utiliza principalmente en el
+     * modo CONSULTAPORCODIGO para mostrar información sin permitir modificaciones.</p>
+     */
     public void deshabilitarEdicion(){
         nifnText.setEditable(false);
         nombreText.setEditable(false);
@@ -101,6 +149,13 @@ public class FormCliente extends javax.swing.JFrame {
         totalText.setEditable(false);
     }
     
+    /**
+     * Permite editar los campos (para altas y modificaciones).
+     * 
+     * <p>Este método habilita la edición de todos los campos de datos (excepto
+     * el total de ventas), permitiendo al usuario ingresar o modificar información.
+     * Se utiliza en los modos ALTA y MODIFICACIONES.</p>
+     */
      public void habilitarEdicion(){
         nifnText.setEditable(true);
         nombreText.setEditable(true);
@@ -616,17 +671,19 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void aceptarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarButtonActionPerformed
-        
+        // Procesa la acción según el modo actual (ALTA/BAJA/MODIFICACIONES/CONSULTA)
         String text = "Errores en: \n";
         ArrayList<String> errores = new ArrayList<>();
 
         switch(modo){
             case BAJA, CONSULTAPORCODIGO:
+                // En modos BAJA y CONSULTA solo se valida el código
                 if (!(codigoCheck(codigoText.getText()))){
                 errores.add("Código");
                 }
                 break;
             default: 
+                // En modos ALTA y MODIFICACIONES se validan todos los campos
                if (!(codigoCheck(codigoText.getText()))){
                 errores.add("Código");
                 }
@@ -660,7 +717,7 @@ public class FormCliente extends javax.swing.JFrame {
         } 
         
             
-        
+        // Construcción del mensaje de error
         if (errores.size()==1){
             text = "Error en: ";
         }
@@ -680,6 +737,7 @@ public class FormCliente extends javax.swing.JFrame {
             try{
                 switch(modo) {
                 case ALTA:
+                    // Operación de inserción de nuevo cliente
                     totalText.setEnabled(false);
 
                        vm.altaCLiente(
@@ -703,7 +761,7 @@ public class FormCliente extends javax.swing.JFrame {
 
 
                 case BAJA:
-
+                        // Operación de eliminación de cliente
                         vm.bajaCliente(codigoText.getText());
 
                         JOptionPane.showMessageDialog(
@@ -717,7 +775,7 @@ public class FormCliente extends javax.swing.JFrame {
                     break; 
 
                 case MODIFICACIONES: 
-
+                        // Operación de actualización de datos del cliente (sin modificar total de ventas)
                         vm.modificarCliente(
                                 codigoText.getText(), 
                                 nifnText.getText() + calcularLetraDNI(nifnText.getText()), 
@@ -743,7 +801,7 @@ public class FormCliente extends javax.swing.JFrame {
                     break; 
 
                 case CONSULTAPORCODIGO:
-
+                        // Operación de búsqueda y visualización de cliente
                         Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
                         nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
                         apellidosText.setText(cliente.getApellidos());
@@ -760,6 +818,7 @@ public class FormCliente extends javax.swing.JFrame {
                     break;
                 }
             } catch (ClienteAlreadyExistsException ex) {
+                // Manejo de cliente duplicado en operación ALTA
                 codigoText.setText("");                    
                 JOptionPane.showMessageDialog(
                     null,                       
@@ -767,6 +826,7 @@ public class FormCliente extends javax.swing.JFrame {
                     "Error",                    
                     JOptionPane.ERROR_MESSAGE );
             }catch (ClienteNotFoundException ex) {
+                // Manejo de cliente no encontrado en operaciones BAJA, MODIFICACIONES o CONSULTA
                 codigoText.setText("");                    
                 JOptionPane.showMessageDialog(
                     null,                       
@@ -774,6 +834,7 @@ public class FormCliente extends javax.swing.JFrame {
                     "Error",                    
                     JOptionPane.ERROR_MESSAGE );
             } catch(DataAccessException ex) {
+                // Manejo de errores generales de acceso a datos
                 codigoText.setText("");                    
                 JOptionPane.showMessageDialog(
                         null, 
@@ -787,6 +848,7 @@ public class FormCliente extends javax.swing.JFrame {
         focoCodigo();
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate
         String text = codigoText.getText();
         if (codigoCheck(text)){
@@ -802,6 +864,7 @@ public class FormCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_codigoTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void nifnTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nifnTextCaretUpdate
         String text = nifnText.getText();
         if (numCheck(text)){
@@ -816,6 +879,7 @@ public class FormCliente extends javax.swing.JFrame {
         
     }//GEN-LAST:event_nifnTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void nombreTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nombreTextCaretUpdate
         String text = nombreText.getText();
         if (nameCheck(text)){
@@ -825,6 +889,7 @@ public class FormCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_nombreTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void apellidosTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_apellidosTextCaretUpdate
         String text = apellidosText.getText();
         if (apellidoCheck(text)){
@@ -834,6 +899,7 @@ public class FormCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_apellidosTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void cpTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_cpTextCaretUpdate
         String text = cpText.getText();
         if (cpCheck(text)){
@@ -843,6 +909,7 @@ public class FormCliente extends javax.swing.JFrame {
         }        // TODO add your handling code here:
     }//GEN-LAST:event_cpTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void telefonoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_telefonoTextCaretUpdate
         String text = telefonoText.getText();
         if (phoneCheck(text)){
@@ -852,6 +919,7 @@ public class FormCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_telefonoTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void movilTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_movilTextCaretUpdate
         String text = movilText.getText();
         if (phoneCheck(text)){
@@ -861,6 +929,7 @@ public class FormCliente extends javax.swing.JFrame {
         } 
     }//GEN-LAST:event_movilTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void faxTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_faxTextCaretUpdate
         String text = faxText.getText();
         if (phoneCheck(text)){
@@ -870,6 +939,7 @@ public class FormCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_faxTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void emailTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_emailTextCaretUpdate
         String text = emailText.getText();
         if (emailCheck(text)){
@@ -879,6 +949,7 @@ public class FormCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_emailTextCaretUpdate
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void localidadTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_localidadTextCaretUpdate
         String text = localidadText.getText();
         if (nameCheck(text)){
@@ -899,6 +970,7 @@ public class FormCliente extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_volverMenuActionPerformed
 
+    // Valida en tiempo real y cambia el color del campo (negro=válido, rojo=inválido)
     private void totalTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_totalTextCaretUpdate
         String text = totalText.getText();
         if (esFloat(text)){
@@ -930,7 +1002,8 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
-        desactivateAll();       
+        desactivateAll();
+        // Uso de lambda para implementar AccionJasperEntreCodigos y generar reporte filtrado
         EntreCodigos ec = new EntreCodigos( 
           (cod1, cod2) -> {
             try {
@@ -949,7 +1022,8 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-        desactivateAll();        
+        desactivateAll();
+        // Generación de reporte con gráfico estadístico de clientes
         try {
             vm.jasperClienteGrafico();
             JOptionPane.showMessageDialog(
@@ -967,6 +1041,7 @@ public class FormCliente extends javax.swing.JFrame {
 
     private void PorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PorCodigoJasperActionPerformed
         desactivateAll();
+        // Generación de reporte completo de clientes ordenados por código
         try {
             vm.jasperClientePorCodigo();
             JOptionPane.showMessageDialog(
@@ -983,6 +1058,7 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_PorCodigoJasperActionPerformed
 
     private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
+            // En modo MODIFICACIONES, autocompleta los campos buscando el cliente por código al perder el foco
             if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
                 try {
                     
@@ -1055,16 +1131,43 @@ public class FormCliente extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new FormCliente().setVisible(true));
     }
     
+    /**
+     * Valida nombres: 1-15 caracteres alfabéticos con espacios y acentos.
+     * 
+     * <p>Acepta letras mayúsculas, minúsculas, espacios, vocales acentuadas
+     * y la letra ñ. No acepta números ni caracteres especiales.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si cumple el patrón [a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,15}, false en caso contrario
+     */
     //método para comprobar Nombre y Apellido
     public static boolean nameCheck(String text){
         return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,15}"); 
     }
     
+    /**
+     * Valida apellidos: 1-35 caracteres alfabéticos con espacios y acentos.
+     * 
+     * <p>Similar a nameCheck pero con mayor longitud permitida (35 caracteres)
+     * para acomodar apellidos compuestos. Acepta letras, espacios, acentos y ñ.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si cumple el patrón [a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,35}, false en caso contrario
+     */
     //método para comprobar Apellido
     public static boolean apellidoCheck(String text){
         return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,35}"); 
     }
     
+    /**
+     * Valida teléfonos: exactamente 9 dígitos o campo vacío (opcional).
+     * 
+     * <p>Este método valida números de teléfono, móvil y fax. Los campos
+     * son opcionales, por lo que también acepta cadenas nulas o vacías.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si el texto es vacío o cumple el patrón [0-9]{9}, false en caso contrario
+     */
     //método para comprobar Teléfono, Móvil, Fax
     public static boolean phoneCheck(String text){
         
@@ -1075,6 +1178,16 @@ public class FormCliente extends javax.swing.JFrame {
         return text.matches("[0-9]{9}");
     }
     
+    /**
+     * Valida emails: formato estándar, máximo 20 caracteres, opcional.
+     * 
+     * <p>Valida direcciones de correo electrónico con el formato usuario@dominio.extension.
+     * El campo es opcional, por lo que acepta cadenas nulas o vacías. La longitud total
+     * no puede superar los 20 caracteres.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si es vacío o cumple el formato email con máximo 20 caracteres, false en caso contrario
+     */
     //método para comprobar Email
     public static boolean emailCheck(String text){
         
@@ -1085,21 +1198,58 @@ public class FormCliente extends javax.swing.JFrame {
         return text.matches("^(?=.{1,20}$)[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
     
+    /**
+     * Valida código de cliente: exactamente 6 dígitos.
+     * 
+     * <p>El código de cliente es un identificador único de 6 dígitos numéricos.
+     * Es un campo obligatorio y debe ser exactamente 6 caracteres.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si cumple el patrón [0-9]{6}, false en caso contrario
+     */
     //metodo para Código
     public static boolean codigoCheck(String text){
         return text.matches("[0-9]{6}");
     }
     
+    /**
+     * Valida código postal: exactamente 5 dígitos.
+     * 
+     * <p>Valida códigos postales españoles, que constan de exactamente
+     * 5 dígitos numéricos.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si cumple el patrón [0-9]{5}, false en caso contrario
+     */
     //metodo para comprobar Codigo Postal
     public static boolean cpCheck(String text){
         return text.matches("[0-9]{5}");
     }
     
+    /**
+     * Valida parte numérica del DNI: exactamente 8 dígitos.
+     * 
+     * <p>Valida los 8 dígitos numéricos del DNI español. La letra del DNI
+     * se calcula automáticamente mediante el método {@link #calcularLetraDNI(String)}.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si cumple el patrón [0-9]{8}, false en caso contrario
+     * @see #calcularLetraDNI(String)
+     */
     //metodo para comprobar DNI
     public static boolean numCheck(String text){
         return text.matches("[0-9]{8}");
     }
     
+    /**
+     * Valida domicilio: alfanumérico con caracteres especiales, 1-40 caracteres.
+     * 
+     * <p>Acepta letras, números, espacios y caracteres especiales comunes en direcciones
+     * como º, ª y /. La longitud debe estar entre 1 y 40 caracteres.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si cumple el patrón [A-Za-z\\s0-9ºª/]{1,40}, false en caso contrario
+     */
     //metodo para comprobar Domicilio
     public static boolean domicilioCheck(String text){
         return text.matches("[A-Za-z\\s0-9ºª/]{1,40}");
@@ -1109,6 +1259,16 @@ public class FormCliente extends javax.swing.JFrame {
         return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,20}");
     }
     
+    /**
+     * Verifica si el texto es convertible a Float.
+     * 
+     * <p>Utilizado para validar el campo de total de ventas. Retorna true
+     * si el texto puede ser parseado como un número de punto flotante,
+     * false en caso contrario (incluyendo texto nulo).</p>
+     * 
+     * @param text El texto a validar
+     * @return true si el texto es convertible a Float, false en caso contrario
+     */
     public boolean esFloat(String text) {
     if (text == null) return false;
 
@@ -1119,7 +1279,19 @@ public class FormCliente extends javax.swing.JFrame {
         return false;
     }
 }
-    
+    /**
+     * Calcula la letra del DNI español según el algoritmo oficial (módulo 23).
+     * 
+     * <p>Este método implementa el algoritmo oficial español para calcular la letra
+     * de control del DNI. Se divide el número del DNI entre 23 y según el resto
+     * (0-22) se asigna una letra específica del array oficial.</p>
+     * 
+     * <p>El array de letras sigue el orden establecido por la legislación española:
+     * T, R, W, A, G, M, Y, F, P, D, X, B, N, J, Z, S, Q, V, H, L, C, K, E</p>
+     * 
+     * @param num Los 8 dígitos del DNI como String
+     * @return La letra correspondiente al DNI o cadena vacía si el número es inválido
+     */
     
     
     private String calcularLetraDNI(String num) {
@@ -1127,6 +1299,7 @@ public class FormCliente extends javax.swing.JFrame {
             return "";
         }
         
+        // Array de letras del algoritmo oficial del DNI español
         String[] letras = {"T", "R", "W", "A", "G", "M", "Y", "F", "P", "D", "X","B", 
                            "N", "J", "Z", "S", "Q", "V", "H", "L", "C", "K", "E"};
         
@@ -1142,6 +1315,13 @@ public class FormCliente extends javax.swing.JFrame {
  
         
    
+    /**
+     * Limpia todos los campos del formulario y devuelve el foco al campo código.
+     * 
+     * <p>Este método resetea el formulario a su estado inicial, vaciando todos
+     * los campos de texto y colocando el cursor en el campo código para facilitar
+     * la entrada de un nuevo cliente o la búsqueda de otro.</p>
+     */
     
     public void reset(){
         codigoText.grabFocus();
