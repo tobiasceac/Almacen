@@ -340,6 +340,10 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="totalText">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
       <Events>
         <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="totalTextCaretUpdate"/>
       </Events>

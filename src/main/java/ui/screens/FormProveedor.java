@@ -951,28 +951,60 @@ public class FormProveedor extends javax.swing.JFrame {
     }//GEN-LAST:event_ListadoPorCodigoJasperActionPerformed
 
     private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
+        try {
+            // Verifica que en modo MODIFICACIONES, exista el articulo en la db
             if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
+                Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
+
+                nifnText.setText(proveedor.getNif().substring(0, proveedor.getNif().length() - 1));
+                apellidosText.setText(proveedor.getApellidos());
+                nombreText.setText(proveedor.getNombre()); 
+                cpText.setText(proveedor.getCodigoPostal()); 
+                localidadText.setText(proveedor.getLocalidad());
+                domicilioText.setText(proveedor.getDomicilio());
+                telefonoText.setText(proveedor.getTelefono());
+                movilText.setText(proveedor.getMovil());
+                faxText.setText(proveedor.getFax());
+                emailText.setText(proveedor.getEmail());
+                totalText.setText(String.valueOf(proveedor.getTotal()));
+
+                codigoText.setEnabled(false);
+                codigoText.setEditable(false);    
+            } else if(modo == Modo.ALTA && codigoCheck(codigoText.getText())){
+                // En modo ALTA: verificar que NO exista
                 try {
                     Proveedor proveedor = vm.consultaPorCodigo(codigoText.getText());
-                 } catch (ProveedorNotFoundException ex) {
-                    codigoText.setText("");                    
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Cliente no encontrado",     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
-                } catch(DataAccessException ex) {
-                    codigoText.setText("");                    
-                    JOptionPane.showMessageDialog(
-                            null, 
-                            "Ha ocurrido un error", 
-                            "Error", 
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+                    throw new ProveedorAlreadyExistsException("Error, ese código ya existe");
+                } catch (ProveedorNotFoundException ex) {
+                    // No hacer nada, 
                 }
-                codigoText.setForeground(Color.RED);                
-            }
+            } 
+        } catch (ProveedorAlreadyExistsException ex) {
+            codigoText.setText("");        
+            fieldEnabled(false);
+            modoForm();
+            JOptionPane.showMessageDialog(
+                null,                       
+                ex.getMessage(),     
+                "Error",                    
+                JOptionPane.ERROR_MESSAGE);
+        } catch (ProveedorNotFoundException ex) {
+            codigoText.setText("");                    
+            JOptionPane.showMessageDialog(
+                null,                       
+                ex.getMessage(),     
+                "Error",                    
+                JOptionPane.ERROR_MESSAGE );
+        } catch(DataAccessException ex) {
+            codigoText.setText("");                    
+            JOptionPane.showMessageDialog(
+                    null, 
+                    ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE
+            );
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+        }
     }//GEN-LAST:event_codigoTextFocusLost
 
     public void ventanaEntreCodigos(){

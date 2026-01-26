@@ -284,6 +284,8 @@ public class FormCliente extends javax.swing.JFrame {
             }
         });
 
+        totalText.setEditable(false);
+        totalText.setEnabled(false);
         totalText.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 totalTextCaretUpdate(evt);
@@ -724,8 +726,8 @@ public class FormCliente extends javax.swing.JFrame {
                     break; 
 
                 case CONSULTAPORCODIGO:
-
                         Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+                        
                         nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
                         apellidosText.setText(cliente.getApellidos());
                         nombreText.setText(cliente.getNombre()); 
@@ -824,7 +826,7 @@ public class FormCliente extends javax.swing.JFrame {
             cpText.setForeground(Color.BLACK);
         } else {
             cpText.setForeground(Color.RED);
-        }        // TODO add your handling code here:
+        }        
     }//GEN-LAST:event_cpTextCaretUpdate
 
     private void telefonoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_telefonoTextCaretUpdate
@@ -895,7 +897,6 @@ public class FormCliente extends javax.swing.JFrame {
     private void altasMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_altasMenuActionPerformed
         modo = Modo.ALTA;
         preparacionModos();
-
     }//GEN-LAST:event_altasMenuActionPerformed
 
     private void bajasMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bajasMenuActionPerformed
@@ -915,6 +916,7 @@ public class FormCliente extends javax.swing.JFrame {
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
         fieldEnabled(false);      
+        // Lambda que recibe dos códigos y genera el reporte PDF entre ese rango
         EntreCodigos ec = new EntreCodigos( 
           (cod1, cod2) -> {
             try {
@@ -967,45 +969,60 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_PorCodigoJasperActionPerformed
 
     private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
+        try {
+            // Verifica que en modo MODIFICACIONES, exista el articulo en la db            
             if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
-                try {
-                    
-                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
-                    
-                    nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
-                    apellidosText.setText(cliente.getApellidos());
-                    nombreText.setText(cliente.getNombre()); 
-                    cpText.setText(cliente.getCodigoPostal()); 
-                    localidadText.setText(cliente.getLocalidad());
-                    domicilioText.setText(cliente.getDomicilio());
-                    telefonoText.setText(cliente.getTelefono());
-                    movilText.setText(cliente.getMovil());
-                    faxText.setText(cliente.getFax());
-                    emailText.setText(cliente.getEmail());
-                    totalText.setText(String.valueOf(cliente.getTotal()));
+                Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
 
-                }catch (ClienteNotFoundException ex) {
-                    codigoText.setText("");   
-                    fieldEnabled(false);
-                    modoForm();
-                    JOptionPane.showMessageDialog(
-                        null,                       
-                        "Cliente no encontrado",     
-                        "Error",                    
-                        JOptionPane.ERROR_MESSAGE );
-                } catch(DataAccessException ex) {
-                    codigoText.setText("");   
-                     fieldEnabled(false);
-                    modoForm();                    
-                    JOptionPane.showMessageDialog(
-                            null, 
-                            "Ha ocurrido un error", 
-                            "Error", 
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+                nifnText.setText(cliente.getNif().substring(0, cliente.getNif().length() - 1));
+                apellidosText.setText(cliente.getApellidos());
+                nombreText.setText(cliente.getNombre()); 
+                cpText.setText(cliente.getCodigoPostal()); 
+                localidadText.setText(cliente.getLocalidad());
+                domicilioText.setText(cliente.getDomicilio());
+                telefonoText.setText(cliente.getTelefono());
+                movilText.setText(cliente.getMovil());
+                faxText.setText(cliente.getFax());
+                emailText.setText(cliente.getEmail());
+                totalText.setText(String.valueOf(cliente.getTotal()));
+
+                codigoText.setEnabled(false);
+                codigoText.setEditable(false);    
+            } else if(modo == Modo.ALTA && codigoCheck(codigoText.getText())){
+                // En modo ALTA: verificar que NO exista
+                try {
+                    Cliente cliente = vm.consultaPorCodigo(codigoText.getText());
+                    throw new ClienteAlreadyExistsException("Error, ese código ya existe");
+                } catch (ClienteNotFoundException ex) {
+                    // No hacer nada, 
                 }
             }  
+        } catch (ClienteAlreadyExistsException ex) {
+            codigoText.setText("");        
+            fieldEnabled(false);
+            modoForm();
+            JOptionPane.showMessageDialog(
+                null,                       
+                ex.getMessage(),     
+                "Error",                    
+                JOptionPane.ERROR_MESSAGE);
+        } catch (ClienteNotFoundException ex) {
+            codigoText.setText("");                    
+            JOptionPane.showMessageDialog(
+                null,                       
+                ex.getMessage(),     
+                "Error",                    
+                JOptionPane.ERROR_MESSAGE );
+        } catch(DataAccessException ex) {
+            codigoText.setText("");                    
+            JOptionPane.showMessageDialog(
+                    null, 
+                    ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE
+            );
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+        }            
     }//GEN-LAST:event_codigoTextFocusLost
 
     private void modificacionesMenuFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_modificacionesMenuFocusLost

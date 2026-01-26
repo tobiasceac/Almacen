@@ -675,27 +675,55 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_descripcionTextCaretUpdate
 
     private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
-        if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
-            try {
-                Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
-             } catch (ArticuloNotFoundException ex) {
-                codigoText.setText("");                    
-                JOptionPane.showMessageDialog(
-                    null,                       
-                    ex.getMessage(),     
-                    "Error",                    
-                    JOptionPane.ERROR_MESSAGE );
-            } catch(DataAccessException ex) {
-                codigoText.setText("");                    
-                JOptionPane.showMessageDialog(
-                        null, 
-                        ex.getMessage(), 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE
-                );
-                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
-            }
-            codigoText.setForeground(Color.RED);                
+        try {
+            // Verifica que en modo MODIFICACIONES, exista el articulo en la db
+            if(modo == Modo.MODIFICACIONES && codigoCheck(codigoText.getText())){
+                    Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
+
+                    descripcionText.setText(articulo.getDescripcion());
+                    stockText.setText(String.valueOf(articulo.getStock()));
+                    stockText.setText(String.valueOf(articulo.getStock()));
+                    stockMinText.setText(String.valueOf(articulo.getStock()));
+                    precioCompraText.setText(String.valueOf(articulo.getStock()));
+                    PrecioVentaText.setText(String.valueOf(articulo.getStock()));
+                    
+                    codigoText.setEnabled(false);
+                    codigoText.setEditable(false);    
+            } else if(modo == Modo.ALTA && codigoCheck(codigoText.getText())){
+                // En modo ALTA: verificar que NO exista
+                try {
+                    Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
+
+                    throw new ArticuloAlreadyExistsException("Error, ese código ya existe");
+                } catch (ArticuloNotFoundException ex) {
+                    // No hacer nada, 
+                }
+            } 
+        } catch (ArticuloAlreadyExistsException ex) {
+            codigoText.setText("");        
+            fieldEnabled(false);
+            modoForm();
+            JOptionPane.showMessageDialog(
+                null,                       
+                ex.getMessage(),     
+                "Error",                    
+                JOptionPane.ERROR_MESSAGE);
+        } catch (ArticuloNotFoundException ex) {
+            codigoText.setText("");                    
+            JOptionPane.showMessageDialog(
+                null,                       
+                ex.getMessage(),     
+                "Error",                    
+                JOptionPane.ERROR_MESSAGE );
+        } catch(DataAccessException ex) {
+            codigoText.setText("");                    
+            JOptionPane.showMessageDialog(
+                    null, 
+                    ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE
+            );
+            System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
         }
     }//GEN-LAST:event_codigoTextFocusLost
 
