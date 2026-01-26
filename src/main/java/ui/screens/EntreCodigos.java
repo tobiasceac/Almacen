@@ -13,17 +13,41 @@ import ui.interfaces.AccionJasperEntreCodigos;
 import ui.viewmodel.ClienteViewModel;
 
 /**
- *
+ * Formulario modal para generar reportes JasperReports filtrados por un rango de códigos.
+ * 
+ * <p>Esta ventana permite al usuario especificar dos códigos (inicial y final) para
+ * generar reportes que incluyan únicamente los registros dentro de ese rango.
+ * La ventana valida en tiempo real que los códigos sean válidos y que el segundo
+ * sea mayor o igual que el primero.</p>
+ * 
+ * <p>Esta clase utiliza el patrón Strategy mediante la interfaz {@link AccionJasperEntreCodigos},
+ * lo que permite reutilizar este formulario para diferentes tipos de reportes (clientes,
+ * artículos, proveedores, etc.) sin modificar su código. La acción específica a ejecutar
+ * se inyecta mediante el constructor.</p>
+ * 
  * @author tobias
+ * @see AccionJasperEntreCodigos
+ * @see ClienteViewModel#jasperClienteEntreCodigos(String, String)
  */
 public class EntreCodigos extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EntreCodigos.class.getName());
+    
+    // Almacena la acción específica a ejecutar cuando se genere el reporte (patrón Strategy)
     private final AccionJasperEntreCodigos accionJasper;
 
     /**
-     * Creates new form EntreCodigos
-     * @param accionJasper
+     * Crea una nueva instancia del formulario EntreCodigos.
+     * 
+     * <p>Este constructor configura la ventana para que:</p>
+     * <ul>
+     *   <li>Esté centrada en la pantalla</li>
+     *   <li>No sea redimensionable</li>
+     *   <li>Tenga desactivado el botón de cierre (solo se cierra con los botones Aceptar o Volver)</li>
+     * </ul>
+     * 
+     * @param accionJasper La implementación de AccionJasperEntreCodigos que define
+     *                     qué tipo de reporte se generará al pulsar Aceptar
      */
     public EntreCodigos(AccionJasperEntreCodigos accionJasper) {
         this.accionJasper = accionJasper;
@@ -117,16 +141,20 @@ public class EntreCodigos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void aceptarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarButtonActionPerformed
+        // Valida los códigos ingresados y ejecuta el reporte si son correctos
         String text = "Errores en: \n";
         ArrayList<String> errores = new ArrayList<>();
         
+        // Validación del primer código: debe ser exactamente 6 dígitos
         if (!(codigoCheck(codigoUnoText.getText()))){
                 errores.add("Primer campo Invalido");
         }
+        // Validación del segundo código: formato válido y debe ser >= al primero
         if (!(codigoCheck(codigoDosText.getText()) && Integer.parseInt(codigoUnoText.getText()) <= Integer.parseInt(codigoDosText.getText()))){
                 errores.add("Formato inválido o el segundo código debe ser mayor o igual que el primero");
         }
         
+        // Construcción del mensaje de error según la cantidad de errores
         if (errores.size()==1){
             text = "Error: ";
         }
@@ -145,6 +173,7 @@ public class EntreCodigos extends javax.swing.JFrame {
         } else {
             
            try {
+               // Ejecución de la acción Jasper específica inyectada en el constructor
                accionJasper.ejecutar(codigoUnoText.getText(), codigoDosText.getText());
                JOptionPane.showMessageDialog(null, "Reporte generado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
            } catch (JRException ex) {
@@ -153,12 +182,22 @@ public class EntreCodigos extends javax.swing.JFrame {
                System.getLogger(EntreCodigos.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
            }
             
+           // Retorno al formulario de clientes (o el formulario que haya abierto esta ventana)
            FormCliente cliente = new FormCliente();
            cliente.setVisible(true);
            this.dispose();
         }
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
+    /**
+     * Valida en tiempo real el primer código y cambia el color del texto.
+     * 
+     * <p>Este listener se ejecuta cada vez que cambia el contenido del campo
+     * codigoUnoText. Si el código es válido (6 dígitos), el texto se muestra
+     * en negro; si es inválido, se muestra en rojo.</p>
+     * 
+     * @param evt El evento de actualización del cursor
+     */
     private void codigoUnoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoUnoTextCaretUpdate
        String text = codigoUnoText.getText();
         if (codigoCheck(text)){
@@ -168,8 +207,21 @@ public class EntreCodigos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_codigoUnoTextCaretUpdate
 
+    /**
+     * Valida el segundo código asegurando formato correcto y que sea &gt;= al primero.
+     * 
+     * <p>Este listener valida que el segundo código cumpla dos condiciones:</p>
+     * <ul>
+     *   <li>Tenga el formato correcto (6 dígitos numéricos)</li>
+     *   <li>Sea mayor o igual que el primer código (para que el rango sea válido)</li>
+     * </ul>
+     * <p>Si ambas condiciones se cumplen, el texto se muestra en negro; si no, en rojo.</p>
+     * 
+     * @param evt El evento de actualización del cursor
+     */
     private void codigoDosTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoDosTextCaretUpdate
        String text = codigoDosText.getText();
+        // Comparación numérica para asegurar que código2 >= código1
         if (!(codigoCheck(text) && Integer.parseInt(codigoUnoText.getText()) <= Integer.parseInt(text))){
             codigoDosText.setForeground(Color.RED);
         } else {
@@ -177,12 +229,29 @@ public class EntreCodigos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_codigoDosTextCaretUpdate
 
+    /**
+     * Cierra esta ventana y vuelve al formulario de clientes.
+     * 
+     * <p>Este método se ejecuta al pulsar el botón "Volver", cancelando
+     * la generación del reporte y retornando al formulario principal.</p>
+     * 
+     * @param evt El evento de acción del botón
+     */
     private void volverButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverButtonActionPerformed
         FormCliente cliente = new FormCliente();
         cliente.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_volverButtonActionPerformed
 
+    /**
+     * Valida que el texto sea exactamente 6 dígitos numéricos.
+     * 
+     * <p>Este método verifica que el código proporcionado cumpla con el formato
+     * requerido: exactamente 6 caracteres, todos ellos dígitos del 0 al 9.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si el texto cumple el patrón [0-9]{6}, false en caso contrario
+     */
     public static boolean codigoCheck(String text){
         return text.matches("[0-9]{6}");
     }
