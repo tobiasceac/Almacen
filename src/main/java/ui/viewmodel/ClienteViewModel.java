@@ -16,20 +16,38 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRException;
 
 /**
- *
+ * ViewModel que actúa como intermediario entre la vista (FormCliente) y el modelo de datos.
+ * 
+ * <p>Esta clase implementa el patrón ViewModel, encargándose de:</p>
+ * <ul>
+ *   <li>Coordinar las operaciones CRUD con el DAO de clientes</li>
+ *   <li>Generar reportes JasperReports en formato PDF</li>
+ *   <li>Transformar y validar datos antes de enviarlos al modelo</li>
+ * </ul>
+ * 
+ * <p>La responsabilidad de validación de formato y campos obligatorios recae
+ * principalmente en la capa de vista, mientras que este ViewModel se encarga
+ * de la lógica de negocio y coordinación con la capa de datos.</p>
+ * 
  * @author tobias
+ * @see data.dao.ClienteDAO
+ * @see ui.screens.FormCliente
  */
 public class ClienteViewModel {
   
    private final ClienteDAO clienteDAO;
    private final JasperBase jCliente;
    
+   // Rutas de archivos Jasper compilados (.jasper) y archivos PDF de salida
+   // para el reporte de listado completo de clientes ordenados por código
    private final String rutaPorCodigo ="src/main/java/resources/jasper/ListadoPorCodigoClientes.jasper";
    private final String rutaPrintPorCodigo ="src/main/java/resources/PDF/Listados Por Codigos Clientes.pdf";
 
+   // Rutas para el reporte filtrado por rango de códigos
    private final String rutaEntreCodigo ="src/main/java/resources/jasper/EntreCodigosClientes.jasper";
    private final String rutaPrintEntreCodigo ="src/main/java/resources/PDF/Entre Codigos Clientes.pdf";
 
+   // Rutas para el reporte con gráfico estadístico de clientes
    private final String rutaGrafico ="src/main/java/resources/jasper/GraficoCliente.jasper";
    private final String rutaPrintGrafico ="src/main/java/resources/PDF/Grafico Cliente.pdf";
    
