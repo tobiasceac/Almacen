@@ -32,9 +32,7 @@ public class FormProveedor extends javax.swing.JFrame {
      */
     public FormProveedor() {
         initComponents();
-        
-        
-        desactivateAll();
+        fieldEnabled(false);        
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar        
         setLocationRelativeTo(null); // Centra la ventana al inizializar
         setResizable(false); // Desactiva el redimensionamiento
@@ -47,39 +45,26 @@ public class FormProveedor extends javax.swing.JFrame {
 
     }
     
-    public void desactivateAll(){
-        codigoText.setEnabled(false);
-        nifnText.setEnabled(false);
-        nombreText.setEnabled(false);
-        apellidosText.setEnabled(false);
-        domicilioText.setEnabled(false); 
-        cpText.setEnabled(false);
-        localidadText.setEnabled(false);
-        telefonoText.setEnabled(false);
-        movilText.setEnabled(false);
-        faxText.setEnabled(false);
-        emailText.setEnabled(false);
-        totalText.setEnabled(false);
-        aceptarButton.setEnabled(false);
-        cancelButton.setEnabled(false);
-        salirButton.setEnabled(false);
-    }
-    
-    public void activateAll(){
-        codigoText.setEnabled(true);
-        nifnText.setEnabled(true);
-        nombreText.setEnabled(true);
-        apellidosText.setEnabled(true);
-        domicilioText.setEnabled(true); 
-        cpText.setEnabled(true);
-        localidadText.setEnabled(true);
-        telefonoText.setEnabled(true);
-        movilText.setEnabled(true);
-        faxText.setEnabled(true);
-        emailText.setEnabled(true);
-        aceptarButton.setEnabled(true);
-        cancelButton.setEnabled(true);
-        salirButton.setEnabled(true);
+    /**
+     * Habilita los campos necesarios para las bases de datos, True or False
+     * @param activar
+     */
+    public void fieldEnabled(Boolean activar){
+        codigoText.setEnabled(activar);
+        nifnText.setEnabled(activar);
+        nombreText.setEnabled(activar);
+        apellidosText.setEnabled(activar);
+        domicilioText.setEnabled(activar); 
+        cpText.setEnabled(activar);
+        localidadText.setEnabled(activar);
+        telefonoText.setEnabled(activar);
+        movilText.setEnabled(activar);
+        faxText.setEnabled(activar);
+        emailText.setEnabled(activar);
+        totalText.setEnabled(activar);
+        aceptarButton.setEnabled(activar);
+        cancelButton.setEnabled(activar);
+        salirButton.setEnabled(activar);
     }
     
     // Habilita los campos necesarios para las bases de datos
@@ -90,31 +75,21 @@ public class FormProveedor extends javax.swing.JFrame {
         salirButton.setEnabled(true);
     }
     
-    public void deshabilitarEdicion(){
-        nifnText.setEditable(false);
-        nombreText.setEditable(false);
-        apellidosText.setEditable(false);
-        domicilioText.setEditable(false); 
-        cpText.setEditable(false);
-        localidadText.setEditable(false);
-        telefonoText.setEditable(false);
-        movilText.setEditable(false);
-        faxText.setEditable(false);
-        emailText.setEditable(false);
-        totalText.setEditable(false);
-    }
-    
-     public void habilitarEdicion(){
-        nifnText.setEditable(true);
-        nombreText.setEditable(true);
-        apellidosText.setEditable(true);
-        domicilioText.setEditable(true); 
-        cpText.setEditable(true);
-        localidadText.setEditable(true);
-        telefonoText.setEditable(true);
-        movilText.setEditable(true);
-        faxText.setEditable(true);
-        emailText.setEditable(true);
+    /**
+     * Habilita la edicion de los campos jText, True or False
+     * @param activar
+     */ 
+     public void habilitarEdicion(Boolean activar){
+        nifnText.setEditable(activar);
+        nombreText.setEditable(activar);
+        apellidosText.setEditable(activar);
+        domicilioText.setEditable(activar); 
+        cpText.setEditable(activar);
+        localidadText.setEditable(activar);
+        telefonoText.setEditable(activar);
+        movilText.setEditable(activar);
+        faxText.setEditable(activar);
+        emailText.setEditable(activar);
     }
     
     public void focoCodigo(){
@@ -124,8 +99,8 @@ public class FormProveedor extends javax.swing.JFrame {
      
     public void preparacionModos(){
         reset();
-        desactivateAll();
-        habilitarEdicion();
+        fieldEnabled(false);        
+        habilitarEdicion(true);
         modoForm();
     }
 
@@ -609,7 +584,7 @@ public class FormProveedor extends javax.swing.JFrame {
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
         reset();
-        desactivateAll();
+        fieldEnabled(false);        
         focoCodigo();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
@@ -697,7 +672,7 @@ public class FormProveedor extends javax.swing.JFrame {
                             );
 
                         reset();
-                        desactivateAll();
+                        fieldEnabled(false);        
                         break; 
                     case BAJA:
                             vm.bajaProveedor(codigoText.getText());
@@ -735,7 +710,7 @@ public class FormProveedor extends javax.swing.JFrame {
                             );
 
                         reset();
-                        desactivateAll();
+                        fieldEnabled(false);        
                         break; 
                     case CONSULTAPORCODIGO:
                         
@@ -783,10 +758,14 @@ public class FormProveedor extends javax.swing.JFrame {
 
     private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate
         String text = codigoText.getText();
+        if (modo == null) {
+            return;  
+        }        
+        
         if (codigoCheck(text)){
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
-                activateAll();
+                fieldEnabled(true);
             }
         } else {
             codigoText.setForeground(Color.RED);
@@ -882,7 +861,7 @@ public class FormProveedor extends javax.swing.JFrame {
 
     private void salirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirButtonActionPerformed
         reset();
-        desactivateAll();
+        fieldEnabled(false);        
     }//GEN-LAST:event_salirButtonActionPerformed
 
     private void volverMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverMenuActionPerformed
@@ -921,7 +900,7 @@ public class FormProveedor extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
-        desactivateAll();        
+        fieldEnabled(false);       
         EntreCodigos ec = new EntreCodigos((cod1, cod2) -> {
             try {
                 vm.jasperProveedorEntreCodigos(cod2, cod2);
@@ -938,7 +917,7 @@ public class FormProveedor extends javax.swing.JFrame {
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-        desactivateAll();        
+        fieldEnabled(false);        
         try {
             vm.jasperProveedorGrafico();
                         JOptionPane.showMessageDialog(
@@ -955,7 +934,7 @@ public class FormProveedor extends javax.swing.JFrame {
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void ListadoPorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ListadoPorCodigoJasperActionPerformed
-        desactivateAll();        
+        fieldEnabled(false);        
         try {
             vm.jasperProveedorPorCodigo();
                         JOptionPane.showMessageDialog(

@@ -32,38 +32,26 @@ public class FormArticulo extends javax.swing.JFrame {
      */
     public FormArticulo() {
         initComponents();
-        
-        
-        desactivateAll();
+        fieldEnabled(false);
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar        
         setLocationRelativeTo(null); // Centra la ventana al inizializar
         setResizable(false); // Desactiva el redimensionamiento
-
-
     }
     
-    public void desactivateAll(){
-        codigoText.setEnabled(false);
-        stockText.setEnabled(false);
-        stockMinText.setEnabled(false);
-        precioCompraText.setEnabled(false);
-        PrecioVentaText.setEnabled(false); 
-        descripcionText.setEnabled(false);
-        aceptarButton.setEnabled(false);
-        cancelButton.setEnabled(false);
-        salirButton.setEnabled(false);
-    }
-    
-    public void activateAll(){
-        codigoText.setEnabled(true);
-        stockText.setEnabled(true);
-        stockMinText.setEnabled(true);
-        precioCompraText.setEnabled(true);
-        PrecioVentaText.setEnabled(true); 
-        descripcionText.setEnabled(true);
-        aceptarButton.setEnabled(true);
-        cancelButton.setEnabled(true);
-        salirButton.setEnabled(true);
+    /**
+     * Habilita los campos necesarios para las bases de datos, True or False
+     * @param activar
+     */
+    public void fieldEnabled(Boolean activar){
+        codigoText.setEnabled(activar);
+        stockText.setEnabled(activar);
+        stockMinText.setEnabled(activar);
+        precioCompraText.setEnabled(activar);
+        PrecioVentaText.setEnabled(activar); 
+        descripcionText.setEnabled(activar);
+        aceptarButton.setEnabled(activar);
+        cancelButton.setEnabled(activar);
+        salirButton.setEnabled(activar);
     }
     
     // Habilita los campos necesarios para las bases de datos
@@ -73,21 +61,18 @@ public class FormArticulo extends javax.swing.JFrame {
         cancelButton.setEnabled(true);
         salirButton.setEnabled(true);
     }
+      
     
-    public void deshabilitarEdicion(){
-        stockText.setEditable(false);
-        stockMinText.setEditable(false);
-        precioCompraText.setEditable(false);
-        PrecioVentaText.setEditable(false); 
-        descripcionText.setEditable(false);
-    }
-    
-     public void habilitarEdicion(){
-        stockText.setEditable(true);
-        stockMinText.setEditable(true);
-        precioCompraText.setEditable(true);
-        PrecioVentaText.setEditable(true); 
-        descripcionText.setEditable(true);
+    /**
+     * Habilita la edicion de los campos jText, True or False
+     * @param activar
+     */    
+    public void habilitarEdicion(Boolean activar){
+        stockText.setEditable(activar);
+        stockMinText.setEditable(activar);
+        precioCompraText.setEditable(activar);
+        PrecioVentaText.setEditable(activar); 
+        descripcionText.setEditable(activar);
     }
     
     public void focoCodigo(){
@@ -97,8 +82,8 @@ public class FormArticulo extends javax.swing.JFrame {
      
     public void preparacionModos(){
         reset();
-        desactivateAll();
-        habilitarEdicion();
+        fieldEnabled(false);
+        habilitarEdicion(true);
         modoForm();
     }
 
@@ -411,7 +396,7 @@ public class FormArticulo extends javax.swing.JFrame {
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
         reset();
-        desactivateAll();
+        fieldEnabled(false);
         focoCodigo();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
@@ -464,7 +449,7 @@ public class FormArticulo extends javax.swing.JFrame {
                            );
 
                         reset();
-                        desactivateAll();
+                        fieldEnabled(false);
                         break; 
                     case BAJA:
                             vm.bajaArticulo(codigoText.getText());
@@ -495,7 +480,7 @@ public class FormArticulo extends javax.swing.JFrame {
                             );
 
                         reset();
-                        desactivateAll();
+                        fieldEnabled(false);
                         break; 
                     case CONSULTAPORCODIGO:
                             Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
@@ -539,10 +524,14 @@ public class FormArticulo extends javax.swing.JFrame {
 
     private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate
         String text = codigoText.getText();
+        if (modo == null) {
+            return; 
+        }
+      
         if (codigoCheck(text)){
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
-                activateAll();
+                fieldEnabled(true);
             }
         } else {
             codigoText.setForeground(Color.RED);
@@ -553,7 +542,7 @@ public class FormArticulo extends javax.swing.JFrame {
 
     private void salirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirButtonActionPerformed
         reset();
-        desactivateAll();
+        fieldEnabled(false);
     }//GEN-LAST:event_salirButtonActionPerformed
 
     private void volverMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverMenuActionPerformed
@@ -584,7 +573,7 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
-        desactivateAll();        
+        fieldEnabled(false);        
         EntreCodigos ec = new EntreCodigos( 
           (cod1, cod2) -> {
             try {
@@ -604,11 +593,11 @@ public class FormArticulo extends javax.swing.JFrame {
     }//GEN-LAST:event_entreCodigosMenuActionPerformed
 
     private void graficoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_graficoMenuActionPerformed
-        desactivateAll();        
+        fieldEnabled(false);        
     }//GEN-LAST:event_graficoMenuActionPerformed
 
     private void ListadoPorCodigoJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ListadoPorCodigoJasperActionPerformed
-        desactivateAll();        
+        fieldEnabled(false);        
         try {
             vm.jasperArticuloPorCodigo();
             JOptionPane.showMessageDialog(
@@ -710,9 +699,6 @@ public class FormArticulo extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_codigoTextFocusLost
 
-    public void ventanaEntreCodigos(){
-    }
-    
     /**
      * @param args the command line arguments
      */
