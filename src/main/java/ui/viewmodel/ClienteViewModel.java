@@ -52,6 +52,12 @@ public class ClienteViewModel {
    private final String rutaPrintGrafico ="src/main/java/resources/PDF/Grafico Cliente.pdf";
    
    
+   /**
+    * Constructor que inicializa las dependencias del ViewModel.
+    * 
+    * <p>Crea instancias de ClienteDAO para operaciones de base de datos
+    * y JasperBase para la generación de reportes PDF.</p>
+    */
    public ClienteViewModel(){
         this.clienteDAO = new ClienteDAO();
         this.jCliente = new JasperBase();

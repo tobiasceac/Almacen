@@ -1255,6 +1255,16 @@ public class FormCliente extends javax.swing.JFrame {
         return text.matches("[A-Za-z\\s0-9ºª/]{1,40}");
     }
     
+    /**
+     * Valida nombres de localidad: 1-20 caracteres alfabéticos con espacios y acentos.
+     * 
+     * <p>Similar a nameCheck pero permite hasta 20 caracteres para acomodar nombres
+     * de localidades más largos. Acepta letras, espacios, vocales acentuadas y la letra ñ.
+     * No acepta números ni caracteres especiales.</p>
+     * 
+     * @param text El texto a validar
+     * @return true si cumple el patrón [a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,20}, false en caso contrario
+     */
     public static boolean localidadCheck(String text){
         return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,20}");
     }
