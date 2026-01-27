@@ -760,17 +760,27 @@ public class FormProveedor extends javax.swing.JFrame {
         String text = codigoText.getText();
         if (modo == null) {
             return;  
-        }        
+        }
         
         if (codigoCheck(text)){
             codigoText.setForeground(Color.BLACK);
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
-                fieldEnabled(true);
+               fieldEnabled(true);
             }
+          
         } else {
             codigoText.setForeground(Color.RED);
-            codigoText.setEnabled(true);            
+
+            if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
+                fieldEnabled(false);
+                codigoText.setEnabled(true);
+                codigoText.requestFocusInWindow();
+            }
         }
+
+        aceptarButton.setEnabled(true);
+        cancelButton.setEnabled(true);
+        salirButton.setEnabled(true);
     }//GEN-LAST:event_codigoTextCaretUpdate
 
     private void nifnTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nifnTextCaretUpdate

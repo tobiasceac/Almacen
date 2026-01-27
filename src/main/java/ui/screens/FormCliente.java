@@ -65,6 +65,7 @@ public class FormCliente extends javax.swing.JFrame {
         cancelButton.setEnabled(activar);
         salirButton.setEnabled(activar);
     }
+   
     
     
     // Habilita los campos necesarios para las bases de datos 
@@ -771,7 +772,6 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
     private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate
-
         String text = codigoText.getText();
         if (modo == null) {
             return;  
@@ -782,11 +782,20 @@ public class FormCliente extends javax.swing.JFrame {
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
                fieldEnabled(true);
             }
+          
         } else {
             codigoText.setForeground(Color.RED);
-            fieldEnabled(false);
-            codigoText.setEnabled(true);
+
+            if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
+                fieldEnabled(false);
+                codigoText.setEnabled(true);
+                codigoText.requestFocusInWindow();
+            }
         }
+
+        aceptarButton.setEnabled(true);
+        cancelButton.setEnabled(true);
+        salirButton.setEnabled(true);
     }//GEN-LAST:event_codigoTextCaretUpdate
 
     private void nifnTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nifnTextCaretUpdate
@@ -912,6 +921,7 @@ public class FormCliente extends javax.swing.JFrame {
     private void porCodigoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_porCodigoMenuActionPerformed
         preparacionModos();
         modo = Modo.CONSULTAPORCODIGO;  
+        
     }//GEN-LAST:event_porCodigoMenuActionPerformed
 
     private void entreCodigosMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entreCodigosMenuActionPerformed
