@@ -751,7 +751,8 @@ public class FormCliente extends javax.swing.JFrame {
                     "Error",                    
                     JOptionPane.ERROR_MESSAGE );
             }catch (ClienteNotFoundException ex) {
-                codigoText.setText("");                    
+                codigoText.setText(""); 
+                reset();
                 JOptionPane.showMessageDialog(
                     null,                       
                     "Cliente no encontrado",     
@@ -787,15 +788,25 @@ public class FormCliente extends javax.swing.JFrame {
             codigoText.setForeground(Color.RED);
 
             if(modo != Modo.BAJA && modo != Modo.CONSULTAPORCODIGO){
-                fieldEnabled(false);
-                codigoText.setEnabled(true);
-                codigoText.requestFocusInWindow();
+                nifnText.setEnabled(false);
+                nombreText.setEnabled(false);
+                apellidosText.setEnabled(false);
+                domicilioText.setEnabled(false); 
+                cpText.setEnabled(false);
+                localidadText.setEnabled(false);
+                telefonoText.setEnabled(false);
+                movilText.setEnabled(false);
+                faxText.setEnabled(false);
+                emailText.setEnabled(false);
+                totalText.setEnabled(false);
             }
         }
 
+        codigoText.setEnabled(true);
         aceptarButton.setEnabled(true);
         cancelButton.setEnabled(true);
         salirButton.setEnabled(true);
+       
     }//GEN-LAST:event_codigoTextCaretUpdate
 
     private void nifnTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nifnTextCaretUpdate
@@ -997,7 +1008,6 @@ public class FormCliente extends javax.swing.JFrame {
                 totalText.setText(String.valueOf(cliente.getTotal()));
 
                 codigoText.setEnabled(false);
-                codigoText.setEditable(false);    
             } else if(modo == Modo.ALTA && codigoCheck(codigoText.getText())){
                 // En modo ALTA: verificar que NO exista
                 try {

@@ -124,7 +124,7 @@ public class Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_proveedoresButtonActionPerformed
 
     private void articulosButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_articulosButtonActionPerformed
-        FormProveedor articulo = new FormProveedor();
+        FormArticulo articulo = new FormArticulo();
         articulo.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_articulosButtonActionPerformed

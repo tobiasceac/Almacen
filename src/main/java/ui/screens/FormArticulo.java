@@ -492,7 +492,6 @@ public class FormArticulo extends javax.swing.JFrame {
                             PrecioVentaText.setText(String.valueOf(articulo.getStock()));
 
                         break;
-                        
                 } 
             } catch (ArticuloAlreadyExistsException ex) {
                 codigoText.setText("");                    
@@ -502,7 +501,8 @@ public class FormArticulo extends javax.swing.JFrame {
                     "Error",                    
                     JOptionPane.ERROR_MESSAGE );
             } catch (ArticuloNotFoundException ex) {
-                codigoText.setText("");                    
+                codigoText.setText("");            
+                reset();
                 JOptionPane.showMessageDialog(
                     null,                       
                     ex.getMessage(),     
@@ -697,7 +697,6 @@ public class FormArticulo extends javax.swing.JFrame {
                     PrecioVentaText.setText(String.valueOf(articulo.getStock()));
                     
                     codigoText.setEnabled(false);
-                    codigoText.setEditable(false);    
             } else if(modo == Modo.ALTA && codigoCheck(codigoText.getText())){
                 // En modo ALTA: verificar que NO exista
                 try {
@@ -767,7 +766,7 @@ public class FormArticulo extends javax.swing.JFrame {
     }
     
     public static boolean descripcionCheck(String text){
-            return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,25}");
+            return text.matches("[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,25}");
     }
     
     public boolean esFloat(String text) {

@@ -736,7 +736,8 @@ public class FormProveedor extends javax.swing.JFrame {
                     "Error",                    
                     JOptionPane.ERROR_MESSAGE );
             } catch (ProveedorNotFoundException ex) {
-                codigoText.setText("");                    
+                codigoText.setText("");  
+                reset();
                 JOptionPane.showMessageDialog(
                     null,                       
                     "Proveedor no encontrado",     
@@ -979,7 +980,6 @@ public class FormProveedor extends javax.swing.JFrame {
                 totalText.setText(String.valueOf(proveedor.getTotal()));
 
                 codigoText.setEnabled(false);
-                codigoText.setEditable(false);    
             } else if(modo == Modo.ALTA && codigoCheck(codigoText.getText())){
                 // En modo ALTA: verificar que NO exista
                 try {
