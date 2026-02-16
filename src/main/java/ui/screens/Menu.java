@@ -63,6 +63,11 @@ public class Menu extends javax.swing.JFrame {
         });
 
         almacenButton.setText("Almacén");
+        almacenButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                almacenButtonActionPerformed(evt);
+            }
+        });
 
         salirButton.setText("Salir");
         salirButton.addActionListener(new java.awt.event.ActionListener() {
@@ -128,6 +133,12 @@ public class Menu extends javax.swing.JFrame {
         articulo.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_articulosButtonActionPerformed
+
+    private void almacenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_almacenButtonActionPerformed
+        FormPedido pedido = new FormPedido();
+        pedido.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_almacenButtonActionPerformed
 
     /**
      * @param args the command line arguments
