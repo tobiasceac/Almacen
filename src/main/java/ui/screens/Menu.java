@@ -62,7 +62,7 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
-        almacenButton.setText("Almacén");
+        almacenButton.setText("Pedidos");
         almacenButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 almacenButtonActionPerformed(evt);

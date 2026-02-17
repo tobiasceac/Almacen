@@ -70,7 +70,7 @@
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="articuloText" alignment="0" min="-2" pref="76" max="-2" attributes="0"/>
+                          <Component id="articuloCodigo" alignment="0" min="-2" pref="76" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -162,13 +162,13 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                              <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                              <Component id="CancelarPedido" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="cancelButton" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="cancelTodoButton" min="-2" pref="120" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="jButton1" min="-2" pref="86" max="-2" attributes="0"/>
+                              <Component id="facturaButton" min="-2" pref="86" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="aceptarButton" min="-2" pref="84" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -240,7 +240,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="articuloText" min="-2" max="-2" attributes="0"/>
+                              <Component id="articuloCodigo" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
@@ -258,7 +258,10 @@
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="precioText" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="precioText" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="stockText" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
@@ -266,42 +269,43 @@
                               <Component id="importeText" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
+                      <EmptySpace pref="21" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="salirButton" alignment="0" min="-2" pref="23" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="aceptarButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="facturaButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="cancelTodoButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="CancelarPedido" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace pref="52" max="-2" attributes="0"/>
                       <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="stockText" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="21" max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="salirButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="aceptarButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Component class="javax.swing.JTextField" name="nombreText">
-      <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="nombreTextCaretUpdate"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nombreTextActionPerformed"/>
-      </Events>
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="cpText">
-      <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="cpTextCaretUpdate"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cpTextActionPerformed"/>
-      </Events>
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="aceptarButton">
       <Properties>
@@ -317,16 +321,17 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="domicilioText">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="domicilioTextActionPerformed"/>
-      </Events>
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="cancelButton">
+    <Component class="javax.swing.JButton" name="cancelTodoButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Cancelar Todo"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelTodoButtonActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -335,21 +340,22 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="totalText">
-      <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="totalTextCaretUpdate"/>
-      </Events>
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="localidadText">
-      <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="localidadTextCaretUpdate"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="localidadTextActionPerformed"/>
-      </Events>
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="apellidosText">
-      <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="apellidosTextCaretUpdate"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="apellidosTextActionPerformed"/>
-      </Events>
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel12">
       <Properties>
@@ -373,8 +379,6 @@
     </Component>
     <Component class="javax.swing.JTextField" name="codigoText">
       <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="codigoTextCaretUpdate"/>
-        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="codigoTextFocusLost"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="codigoTextActionPerformed"/>
       </Events>
     </Component>
@@ -387,6 +391,10 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="niflText">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
@@ -394,10 +402,10 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="nifnText">
-      <Events>
-        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="nifnTextCaretUpdate"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nifnTextActionPerformed"/>
-      </Events>
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
       <Properties>
@@ -413,7 +421,10 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="articuloText">
+    <Component class="javax.swing.JTextField" name="articuloCodigo">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="articuloCodigoActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>
@@ -426,8 +437,15 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="unidadesText">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="unidadesTextActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="descripcionText">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel10">
       <Properties>
@@ -440,6 +458,10 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="stockText">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel13">
       <Properties>
@@ -447,6 +469,10 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="precioText">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel14">
       <Properties>
@@ -454,16 +480,26 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="importeText">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="facturaButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Factura"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="facturaButtonActionPerformed"/>
+      </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton2">
+    <Component class="javax.swing.JButton" name="CancelarPedido">
       <Properties>
         <Property name="text" type="java.lang.String" value="Cancelar Pedido"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CancelarPedidoActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

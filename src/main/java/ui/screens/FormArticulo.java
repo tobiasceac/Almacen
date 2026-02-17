@@ -486,7 +486,6 @@ public class FormArticulo extends javax.swing.JFrame {
                             Articulo articulo = vm.consultaPorCodigo(codigoText.getText());
                             descripcionText.setText(articulo.getDescripcion());
                             stockText.setText(String.valueOf(articulo.getStock()));
-                            stockText.setText(String.valueOf(articulo.getStock()));
                             stockMinText.setText(String.valueOf(articulo.getStock()));
                             precioCompraText.setText(String.valueOf(articulo.getStock()));
                             PrecioVentaText.setText(String.valueOf(articulo.getStock()));

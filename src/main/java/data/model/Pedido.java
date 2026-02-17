@@ -13,6 +13,7 @@ public class Pedido {
     float precioCantidad;
 
     public Pedido() {
+        
     }
 
     public Pedido(String codigoArticulo, int unidades, float stock, float precioUnidad, float precioCantidad) {

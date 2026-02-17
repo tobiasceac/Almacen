@@ -4,14 +4,19 @@
  */
 package ui.screens;
 
+import data.model.Articulo;
 import data.model.Cliente;
+import data.model.Pedido;
 import data.model.Proveedor;
+import excepciones.ArticuloNotFoundException;
 import excepciones.ClienteNotFoundException;
 import excepciones.DataAccessException;
 import excepciones.ProveedorNotFoundException;
+import excepciones.StockNotEnoughtException;
 import java.awt.Color;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import ui.viewmodel.ArticuloViewModel;
 import ui.viewmodel.ClienteViewModel;
 import ui.viewmodel.ProveedorViewModel;
 
@@ -22,10 +27,13 @@ import ui.viewmodel.ProveedorViewModel;
 public class FormPedido extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormPedido.class.getName());
-    private enum Modo {CLIENTE, PROVEEDOR}
+    private enum Modo {CLIENTE, PROVEEDOR, NULO}
     private Modo modo;
     private ClienteViewModel vmC = new ClienteViewModel();
     private ProveedorViewModel vmP = new ProveedorViewModel();
+    private ArticuloViewModel vmA = new ArticuloViewModel();
+    private ArrayList<Pedido> lPedidos = new ArrayList<>();
+
 
 
     /**
@@ -33,36 +41,38 @@ public class FormPedido extends javax.swing.JFrame {
      */
     public FormPedido() {
         initComponents();
+        
+        allFieldEnabled(false);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); // Desaciva el boton de cerrar
+        setLocationRelativeTo(null); // Centra la ventana al inizializar
+        setResizable(false); // Desactiva el redimensionamiento
     }
     
    /**
      * Habilita los campos necesarios para las bases de datos, True or False
      * @param activar
      */
-    public void fieldEnabled(Boolean activar){
+    public void allFieldEnabled(Boolean activar){
         codigoText.setEnabled(activar);
-        nifnText.setEnabled(activar);
-        nombreText.setEnabled(activar);
-        apellidosText.setEnabled(activar);
-        domicilioText.setEnabled(activar); 
-        cpText.setEnabled(activar);
-        localidadText.setEnabled(activar);
-        totalText.setEnabled(activar);
+        articuloCodigo.setEnabled(activar);
+        unidadesText.setEnabled(activar);
         aceptarButton.setEnabled(activar);
-        cancelButton.setEnabled(activar);
+        facturaButton.setEnabled(activar);
         salirButton.setEnabled(activar);
+        cancelTodoButton.setEnabled(activar);
+        CancelarPedido.setEnabled(activar);
     }
    
     
-    
+    /*
     // Habilita los campos necesarios para las bases de datos 
     public void modoForm(){
         codigoText.setEnabled(true);
         aceptarButton.setEnabled(true);
-        cancelButton.setEnabled(true);
+        cancelTodoButton.setEnabled(true);
         salirButton.setEnabled(true);
     }
-    
+    */
     
     /**
      * Habilita la edicion de los campos jText, True or False
@@ -81,16 +91,7 @@ public class FormPedido extends javax.swing.JFrame {
         codigoText.setEnabled(true);
         codigoText.requestFocus();
     }
-     
-    /**
-     * Metodo usado para la preparacion de los campos al elegir los modos
-     */
-    public void preparacionModos(){
-        reset();
-        fieldEnabled(false);
-        habilitarEdicion(true);
-        modoForm();
-    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -105,7 +106,7 @@ public class FormPedido extends javax.swing.JFrame {
         aceptarButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         domicilioText = new javax.swing.JTextField();
-        cancelButton = new javax.swing.JButton();
+        cancelTodoButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         totalText = new javax.swing.JTextField();
         localidadText = new javax.swing.JTextField();
@@ -121,7 +122,7 @@ public class FormPedido extends javax.swing.JFrame {
         nifnText = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        articuloText = new javax.swing.JTextField();
+        articuloCodigo = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         unidadesText = new javax.swing.JTextField();
@@ -133,8 +134,8 @@ public class FormPedido extends javax.swing.JFrame {
         precioText = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         importeText = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        facturaButton = new javax.swing.JButton();
+        CancelarPedido = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         clientesMenu = new javax.swing.JMenuItem();
@@ -144,27 +145,11 @@ public class FormPedido extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        nombreText.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                nombreTextCaretUpdate(evt);
-            }
-        });
-        nombreText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nombreTextActionPerformed(evt);
-            }
-        });
+        nombreText.setEditable(false);
+        nombreText.setEnabled(false);
 
-        cpText.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                cpTextCaretUpdate(evt);
-            }
-        });
-        cpText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cpTextActionPerformed(evt);
-            }
-        });
+        cpText.setEditable(false);
+        cpText.setEnabled(false);
 
         aceptarButton.setText("Aceptar");
         aceptarButton.addActionListener(new java.awt.event.ActionListener() {
@@ -175,48 +160,26 @@ public class FormPedido extends javax.swing.JFrame {
 
         jLabel1.setText("Código");
 
-        domicilioText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                domicilioTextActionPerformed(evt);
-            }
-        });
+        domicilioText.setEditable(false);
+        domicilioText.setEnabled(false);
 
-        cancelButton.setText("Cancelar Todo");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+        cancelTodoButton.setText("Cancelar Todo");
+        cancelTodoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
+                cancelTodoButtonActionPerformed(evt);
             }
         });
 
         jLabel2.setText("N.I.F.");
 
-        totalText.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                totalTextCaretUpdate(evt);
-            }
-        });
+        totalText.setEditable(false);
+        totalText.setEnabled(false);
 
-        localidadText.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                localidadTextCaretUpdate(evt);
-            }
-        });
-        localidadText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                localidadTextActionPerformed(evt);
-            }
-        });
+        localidadText.setEditable(false);
+        localidadText.setEnabled(false);
 
-        apellidosText.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                apellidosTextCaretUpdate(evt);
-            }
-        });
-        apellidosText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                apellidosTextActionPerformed(evt);
-            }
-        });
+        apellidosText.setEditable(false);
+        apellidosText.setEnabled(false);
 
         jLabel12.setText("Total");
 
@@ -226,16 +189,6 @@ public class FormPedido extends javax.swing.JFrame {
 
         jLabel7.setText("Localidad");
 
-        codigoText.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                codigoTextCaretUpdate(evt);
-            }
-        });
-        codigoText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                codigoTextFocusLost(evt);
-            }
-        });
         codigoText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 codigoTextActionPerformed(evt);
@@ -249,38 +202,67 @@ public class FormPedido extends javax.swing.JFrame {
             }
         });
 
+        niflText.setEditable(false);
+        niflText.setEnabled(false);
+
         jLabel4.setText("Apellidos");
 
-        nifnText.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                nifnTextCaretUpdate(evt);
-            }
-        });
-        nifnText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nifnTextActionPerformed(evt);
-            }
-        });
+        nifnText.setEditable(false);
+        nifnText.setEnabled(false);
 
         jLabel6.setText("C.P.");
 
         jSeparator2.setBorder(javax.swing.BorderFactory.createCompoundBorder());
 
+        articuloCodigo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                articuloCodigoActionPerformed(evt);
+            }
+        });
+
         jLabel8.setText("Artículo");
 
         jLabel9.setText("Unidades");
+
+        unidadesText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                unidadesTextActionPerformed(evt);
+            }
+        });
+
+        descripcionText.setEditable(false);
+        descripcionText.setEnabled(false);
 
         jLabel10.setText("Descripción");
 
         jLabel11.setText("Stock");
 
+        stockText.setEditable(false);
+        stockText.setEnabled(false);
+
         jLabel13.setText("Precio");
+
+        precioText.setEditable(false);
+        precioText.setEnabled(false);
 
         jLabel14.setText("Importe");
 
-        jButton1.setText("Factura");
+        importeText.setEditable(false);
+        importeText.setEnabled(false);
 
-        jButton2.setText("Cancelar Pedido");
+        facturaButton.setText("Factura");
+        facturaButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                facturaButtonActionPerformed(evt);
+            }
+        });
+
+        CancelarPedido.setText("Cancelar Pedido");
+        CancelarPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CancelarPedidoActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("pedidos");
 
@@ -324,7 +306,7 @@ public class FormPedido extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(articuloText, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(articuloCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel10)
@@ -393,12 +375,12 @@ public class FormPedido extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(7, 7, 7)
-                                .addComponent(jButton2)
+                                .addComponent(CancelarPedido)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cancelTodoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(25, 25, 25))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(facturaButton, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(aceptarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -454,7 +436,7 @@ public class FormPedido extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(articuloText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(articuloCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -468,181 +450,94 @@ public class FormPedido extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(precioText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(precioText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(stockText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel14)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(importeText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(importeText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(salirButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(aceptarButton)
+                                .addComponent(facturaButton)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cancelTodoButton)
+                            .addComponent(CancelarPedido))
+                        .addGap(12, 12, 12))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(stockText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(salirButton)
-                    .addComponent(aceptarButton)
-                    .addComponent(jButton1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
-                    .addComponent(jButton2))
-                .addGap(12, 12, 12))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void nombreTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nombreTextCaretUpdate
-        String text = nombreText.getText();
-        if (nameCheck(text)){
-            nombreText.setForeground(Color.BLACK);
-        } else {
-            nombreText.setForeground(Color.RED);
-        }
-    }//GEN-LAST:event_nombreTextCaretUpdate
-
-    private void nombreTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nombreTextActionPerformed
-
-    private void cpTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_cpTextCaretUpdate
-        String text = cpText.getText();
-        if (cpCheck(text)){
-            cpText.setForeground(Color.BLACK);
-        } else {
-            cpText.setForeground(Color.RED);
-        }
-    }//GEN-LAST:event_cpTextCaretUpdate
-
-    private void cpTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cpTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cpTextActionPerformed
-
     private void aceptarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarButtonActionPerformed
+        boolean existe = false;
+        
+        try{
+            Pedido p = new Pedido(articuloCodigo.getText(), Integer.valueOf(unidadesText.getText()), Float.valueOf(stockText.getText()), Float.valueOf(precioText.getText()), Float.valueOf(importeText.getText()));
+            
+            if ((p.getUnidades() > p.getStock()) && modo == Modo.CLIENTE){ 
+                throw new StockNotEnoughtException("Stock sobre pasado");
+            }
 
-        String text = "Errores en: \n";
-        ArrayList<String> errores = new ArrayList<>();
+            if (modo==Modo.CLIENTE){
 
-        if (!(codigoCheck(codigoText.getText()))){
-            errores.add("Código");
-        }
-        if (!(numCheck(nifnText.getText()))){
-            errores.add("DNI");
-        }
-        if (!(nameCheck(nombreText.getText()))) {
-            errores.add("Nombre");
-        }
-        if (!(nameCheck(apellidosText.getText()))) {
-            errores.add("Apellidos");
-        }
-        if (domicilioText.getText().isEmpty()){
-            errores.add("Domicilio");
-        }
-        if (!(cpCheck(cpText.getText()))) {
-            errores.add("C.P.");
+
+            for (Pedido pedido : lPedidos){
+                if (pedido.getCodigoArticulo().equals(p.getCodigoArticulo())){
+                    if (pedido.getStock() < pedido.getUnidades() + p.getUnidades()) throw new StockNotEnoughtException("No hay suficiente stock disponible");
+                        pedido.setUnidades(pedido.getUnidades()+p.getUnidades());
+                        pedido.setPrecioCantidad(pedido.getPrecioCantidad()+p.getPrecioCantidad());
+                        existe = true;
+                    }
+                } 
+            } else {
+
+
+                for (Pedido pedido : lPedidos){
+                    if (pedido.getCodigoArticulo().equals(p.getCodigoArticulo())){                                 
+                        pedido.setUnidades(pedido.getUnidades()+p.getUnidades());
+                        pedido.setPrecioCantidad(pedido.getPrecioCantidad()+p.getPrecioCantidad());
+                        existe = true;
+                    }
+                } 
+            }   
+            
+            if(!existe) lPedidos.add(p);
+        }  catch (StockNotEnoughtException e) {
+            JOptionPane.showMessageDialog(null, "No hay suficiente stock en el almacen");
         }
         
-
-        if (errores.size()==1){
-            text = "Error en: ";
-        }
-
-        for (int i = 0; i < errores.size(); i++){
-            if (i == errores.size()-1){
-                text += errores.get(i);
-            } else {
-                text += errores.get(i) + ", ";
-            }
-        }
-
-        if (!errores.isEmpty()) {
-            JOptionPane.showMessageDialog(null, text, "Ventana Error", JOptionPane.YES_OPTION);
-        } else {
-            try{
-                switch(modo) {
-                }
-            } catch(Exception e){}
-        }
-        focoCodigo();
+        resetDown();
+        unidadesText.setEnabled(false);
+        enableButtons(true);
+        
+        aceptarButton.setEnabled(false);
+        
+        articuloCodigo.setEnabled(true);
+        articuloCodigo.grabFocus();
+        CancelarPedido.setEnabled(false);
     }//GEN-LAST:event_aceptarButtonActionPerformed
 
-    private void domicilioTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_domicilioTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_domicilioTextActionPerformed
-
-    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        // TODO add your handling code here:
-        reset();
-        fieldEnabled(false);
-        focoCodigo();
-    }//GEN-LAST:event_cancelButtonActionPerformed
-
-    private void totalTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_totalTextCaretUpdate
-        String text = totalText.getText();
-        if (esFloat(text)){
-            totalText.setForeground(Color.BLACK);
-        } else {
-            totalText.setForeground(Color.RED);
-        }
-    }//GEN-LAST:event_totalTextCaretUpdate
-
-    private void localidadTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_localidadTextCaretUpdate
-        String text = localidadText.getText();
-        if (nameCheck(text)){
-            localidadText.setForeground(Color.BLACK);
-        } else {
-            localidadText.setForeground(Color.RED);
-        }
-    }//GEN-LAST:event_localidadTextCaretUpdate
-
-    private void localidadTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_localidadTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_localidadTextActionPerformed
-
-    private void apellidosTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_apellidosTextCaretUpdate
-        String text = apellidosText.getText();
-        if (apellidoCheck(text)){
-            apellidosText.setForeground(Color.BLACK);
-        } else {
-            apellidosText.setForeground(Color.RED);
-        }
-    }//GEN-LAST:event_apellidosTextCaretUpdate
-
-    private void apellidosTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_apellidosTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_apellidosTextActionPerformed
-
-    private void codigoTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_codigoTextCaretUpdate
-        String text = codigoText.getText();
-        if (modo == null) {
-            return;
-        }
-
-        if (codigoCheck(text)){
-            codigoText.setForeground(Color.BLACK);
-                fieldEnabled(true);
-        } else {
-            codigoText.setForeground(Color.RED);
-
-            nifnText.setEnabled(false);
-            nombreText.setEnabled(false);
-            apellidosText.setEnabled(false);
-            domicilioText.setEnabled(false);
-            cpText.setEnabled(false);
-            localidadText.setEnabled(false);
-            totalText.setEnabled(false);
-        }
-
-        codigoText.setEnabled(true);
-        aceptarButton.setEnabled(true);
-        cancelButton.setEnabled(true);
+    private void cancelTodoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelTodoButtonActionPerformed
+        resetAll();
+        lPedidos.clear();
+        allFieldEnabled(false);
         salirButton.setEnabled(true);
+        codigoText.setEnabled(true);
+        codigoText.setEditable(true);
+        codigoText.grabFocus();
+    }//GEN-LAST:event_cancelTodoButtonActionPerformed
 
-    }//GEN-LAST:event_codigoTextCaretUpdate
-
-    private void codigoTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codigoTextFocusLost
-        try {
+    private void codigoTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codigoTextActionPerformed
+ try {
             // Verifica que en modo MODIFICACIONES, exista el articulo en la db
             if(modo == Modo.CLIENTE && codigoCheck(codigoText.getText())){
                 Cliente cliente = vmC.consultaPorCodigo(codigoText.getText());
@@ -655,7 +550,10 @@ public class FormPedido extends javax.swing.JFrame {
                 domicilioText.setText(cliente.getDomicilio());
                 totalText.setText(String.valueOf(cliente.getTotal()));
 
-                codigoText.setEnabled(false);
+                codigoText.setEditable(false);
+                articuloCodigo.setEnabled(true);
+                articuloCodigo.grabFocus();
+                cancelTodoButton.setEnabled(true);
             } else if(modo == Modo.PROVEEDOR && codigoCheck(codigoText.getText())){
                 
                 Proveedor proveedor = vmP.consultaPorCodigo(codigoText.getText());
@@ -667,11 +565,14 @@ public class FormPedido extends javax.swing.JFrame {
                 localidadText.setText(proveedor.getLocalidad());
                 domicilioText.setText(proveedor.getDomicilio());
                 totalText.setText(String.valueOf(proveedor.getTotal()));
+                
+                codigoText.setEditable(false);
+                articuloCodigo.setEnabled(true);
+                articuloCodigo.grabFocus();
+                cancelTodoButton.setEnabled(true);
             }
         } catch (ProveedorNotFoundException ex) {
             codigoText.setText("");        
-            fieldEnabled(false);
-            modoForm();
             JOptionPane.showMessageDialog(
                 null,                       
                 ex.getMessage(),     
@@ -694,37 +595,17 @@ public class FormPedido extends javax.swing.JFrame {
             );
             System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
         }
-    }//GEN-LAST:event_codigoTextFocusLost
-
-    private void codigoTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codigoTextActionPerformed
-
     }//GEN-LAST:event_codigoTextActionPerformed
 
     private void salirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirButtonActionPerformed
-        reset();
-        fieldEnabled(false);
+        cambiarModo(Modo.NULO);
+        lPedidos.clear();
+        unidadesText.setEnabled(false);
     }//GEN-LAST:event_salirButtonActionPerformed
 
-    private void nifnTextCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nifnTextCaretUpdate
-        String text = nifnText.getText();
-
-        if (numCheck(text)){
-            String letra = calcularLetraDNI(text);
-            niflText.setText(letra);
-            nifnText.setForeground(Color.BLACK);
-        } else {
-            nifnText.setForeground(Color.RED);
-            niflText.setText("");
-        }
-    }//GEN-LAST:event_nifnTextCaretUpdate
-
-    private void nifnTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nifnTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nifnTextActionPerformed
-
     private void proveedoresMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proveedoresMenuActionPerformed
-        preparacionModos();
-        modo = Modo.PROVEEDOR;
+        cambiarModo(Modo.PROVEEDOR);
+        salirButton.setEnabled(true);
     }//GEN-LAST:event_proveedoresMenuActionPerformed
 
     private void volverMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverMenuActionPerformed
@@ -734,9 +615,77 @@ public class FormPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_volverMenuActionPerformed
 
     private void clientesMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientesMenuActionPerformed
-        preparacionModos();
-        modo = Modo.CLIENTE;
+        cambiarModo(Modo.CLIENTE);
+        salirButton.setEnabled(true);        
     }//GEN-LAST:event_clientesMenuActionPerformed
+
+    private void articuloCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_articuloCodigoActionPerformed
+        if (codigoCheck(articuloCodigo.getText())){
+            try {
+                Articulo articulo = vmA.consultaPorCodigo(articuloCodigo.getText());
+                descripcionText.setText(articulo.getDescripcion());
+                stockText.setText(String.valueOf(articulo.getStock()));
+                if (modo == Modo.CLIENTE){
+                    precioText.setText(String.valueOf(articulo.getPrecioVenta()));
+                } else {
+                    precioText.setText(String.valueOf(articulo.getPrecioCompra()));
+                }   
+                unidadesText.setEnabled(true);
+                
+                for (Pedido ped : lPedidos) {
+                    if (ped.getCodigoArticulo().equals(articulo.getCodigo())){
+                        if (modo==Modo.CLIENTE) {
+                           float realStock = articulo.getStock() - ped.getUnidades();
+                           stockText.setText(String.valueOf(realStock));
+                        } else {
+                           float realStock = articulo.getStock() + ped.getUnidades();
+                           stockText.setText(String.valueOf(realStock));
+                        }
+                    }
+                }                
+                
+                articuloCodigo.setEnabled(false);
+                CancelarPedido.setEnabled(true);
+                unidadesText.grabFocus();
+            } catch (ArticuloNotFoundException ex) {
+                articuloCodigo.setText("");            
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    ex.getMessage(),     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch(DataAccessException ex) {
+                articuloCodigo.setText("");                    
+                JOptionPane.showMessageDialog(
+                    null, 
+                    ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE
+                );
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+            }
+        } 
+    }//GEN-LAST:event_articuloCodigoActionPerformed
+
+    private void CancelarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelarPedidoActionPerformed
+        resetDown();
+        articuloCodigo.setEnabled(true);
+        unidadesText.setEnabled(false);
+    }//GEN-LAST:event_CancelarPedidoActionPerformed
+
+    private void unidadesTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unidadesTextActionPerformed
+        int ud = Integer.valueOf(unidadesText.getText());
+        float precio = Float.valueOf(precioText.getText());
+        
+        float precioTotal = ud * precio;
+        
+        importeText.setText(String.valueOf(precioTotal));
+        aceptarButton.setEnabled(true);
+    }//GEN-LAST:event_unidadesTextActionPerformed
+
+    private void facturaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facturaButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_facturaButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -763,116 +712,156 @@ public class FormPedido extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new FormPedido().setVisible(true));
     }
     
-        //método para comprobar Nombre y Apellido
-    public static boolean nameCheck(String text){
-        return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,15}"); 
-    }
-    
-    //método para comprobar Apellido
-    public static boolean apellidoCheck(String text){
-        return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,35}"); 
-    }
-    
-    //método para comprobar Teléfono, Móvil, Fax
-    public static boolean phoneCheck(String text){
-        
-        if (text == null || text.isBlank()){
-            return true;
-        }        
-        
-        return text.matches("[0-9]{9}");
-    }
-    
-    //método para comprobar Email
-    public static boolean emailCheck(String text){
-        
-        if (text == null || text.isBlank()){
-            return true;
-        }
-        
-        return text.matches("^(?=.{1,20}$)[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    }
-    
     //metodo para Código
     public static boolean codigoCheck(String text){
         return text.matches("[0-9]{6}");
     }
     
-    //metodo para comprobar Codigo Postal
-    public static boolean cpCheck(String text){
-        return text.matches("[0-9]{5}");
-    }
-    
-    //metodo para comprobar DNI
-    public static boolean numCheck(String text){
-        return text.matches("[0-9]{8}");
-    }
-    
-    //metodo para comprobar Domicilio
-    public static boolean domicilioCheck(String text){
-        return text.matches("[A-Za-z\\s0-9ºª/]{1,40}");
-    }
-    
-    public static boolean localidadCheck(String text){
-        return text.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{1,20}");
-    }
-    
     public boolean esFloat(String text) {
-    if (text == null) return false;
+        if (text == null) return false;
 
-    try {
-        Float.valueOf(text);
-        return true;
-    } catch (NumberFormatException e) {
-        return false;
+        try {
+            Float.valueOf(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
     }
 }
     
     
+    public void resetAll(){
+        codigoText.setText("");
+        nifnText.setText("");
+        nifnText.setText("");
+        apellidosText.setText("");
+        nombreText.setText("");
+        domicilioText.setText("");
+        cpText.setText("");
+        localidadText.setText("");
+        totalText.setText("");
+        articuloCodigo.setText("");
+        descripcionText.setText("");
+        stockText.setText("");
+        precioText.setText("");
+        unidadesText.setText("");
+        importeText.setText("");
+    }
     
-    private String calcularLetraDNI(String num) {
-        if (num == null || num.isEmpty() || ! numCheck(num)) {
-            return "";
+    public void cambiarModo(Modo modo){
+        this.modo = modo;
+        enableButtons(false);
+        resetUp();
+        resetDown();
+        allFieldEnabled(false);
+        lPedidos.clear();
+        
+        
+        if (modo == Modo.CLIENTE) {
+            facturaButton.setText("Factura");
+        } else {
+            facturaButton.setText("Finalizar");
         }
         
-        String[] letras = {"T", "R", "W", "A", "G", "M", "Y", "F", "P", "D", "X","B", 
-                           "N", "J", "Z", "S", "Q", "V", "H", "L", "C", "K", "E"};
         
-        try {
-            int numero = Integer.parseInt(num);
-            int resto = numero % 23;
-            return letras[resto];
-        } catch (NumberFormatException e) {
-            return "";
+        if (modo != Modo.NULO){
+            codigoText.setEnabled(true);
+            codigoText.grabFocus();
+            
+        } else {
+            codigoText.setEditable(true);
         }
     }
     
-    public void reset(){
-        codigoText.grabFocus();
+    
+    public void mostrarCliente(Cliente cli){
+        if (cli.getNif() != null){
+            codigoText.setText(cli.getCodigo());
+            nifnText.setText(cli.getNif());
+            apellidosText.setText(cli.getApellidos());
+            nombreText.setText(cli.getNombre());
+            domicilioText.setText(cli.getDomicilio());
+            cpText.setText(cli.getCodigoPostal());
+            localidadText.setText(cli.getLocalidad());
+            totalText.setText(String.valueOf(cli.getTotal()));
+        }
+    }
+    
+    //Muestra por pantalla el proveedor que se le pase por parametro
+    public void mostrarProveedor(Proveedor pro){
+        if (pro.getNif() != null){
+            String numeroDNI = pro.getNif().substring(0, 8);
+            codigoText.setText(pro.getCodigo());
+            nifnText.setText(pro.getNif());
+            apellidosText.setText(pro.getApellidos());
+            nombreText.setText(pro.getNombre());
+            domicilioText.setText(pro.getDomicilio());
+            cpText.setText(pro.getCodigoPostal());
+            localidadText.setText(pro.getLocalidad());
+            totalText.setText(String.valueOf(pro.getTotal()));
+        }
+    }
+    
+    //Mostrar por pantalla el codigo
+    public void mostrarArticulo(Articulo art){
+        if (art.getCodigo() != null){
+            articuloCodigo.setText(art.getCodigo());
+            descripcionText.setText(art.getDescripcion());
+            stockText.setText(String.valueOf(art.getStock()));
+           
+            if (modo==Modo.CLIENTE){
+                precioText.setText(String.valueOf(art.getPrecioVenta()));
+            } else {
+                precioText.setText(String.valueOf(art.getPrecioCompra()));
+            }          
+        } else {
+            System.out.println("Error");
+        }
+    }
+    
+    public void resetUp(){
         codigoText.setText("");
         nifnText.setText("");
-        niflText.setText("");
-        nombreText.setText("");
+        nifnText.setText("");
         apellidosText.setText("");
+        nombreText.setText("");
         domicilioText.setText("");
         cpText.setText("");
         localidadText.setText("");
         totalText.setText("");
     }
+    
+    public void resetDown(){
+        articuloCodigo.setText("");
+        descripcionText.setText("");
+        stockText.setText("");
+        precioText.setText("");
+        unidadesText.setText("");
+        importeText.setText("");
+    }
+    
+  
+    public void enableButtons(boolean activar){
+        aceptarButton.setEnabled(activar);
+        facturaButton.setEnabled(activar);
+        salirButton.setEnabled(activar);
+        cancelTodoButton.setEnabled(activar);
+        CancelarPedido.setEnabled(activar);
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton CancelarPedido;
     private javax.swing.JButton aceptarButton;
     private javax.swing.JTextField apellidosText;
-    private javax.swing.JTextField articuloText;
-    private javax.swing.JButton cancelButton;
+    private javax.swing.JTextField articuloCodigo;
+    private javax.swing.JButton cancelTodoButton;
     private javax.swing.JMenuItem clientesMenu;
     private javax.swing.JTextField codigoText;
     private javax.swing.JTextField cpText;
     private javax.swing.JTextField descripcionText;
     private javax.swing.JTextField domicilioText;
+    private javax.swing.JButton facturaButton;
     private javax.swing.JTextField importeText;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
