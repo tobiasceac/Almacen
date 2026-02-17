@@ -625,6 +625,7 @@ public class FormPedido extends javax.swing.JFrame {
                 
                 float stockDisponible = calcularStockDisponible(articulo);
                 stockText.setText(String.valueOf(stockDisponible));
+                
                 if (modo == Modo.CLIENTE){
                     precioText.setText(String.valueOf(articulo.getPrecioVenta()));
                 } else {
@@ -762,10 +763,16 @@ public class FormPedido extends javax.swing.JFrame {
     
     private float calcularStockDisponible(Articulo articulo) {
         if (articulo == null) return 0;
+
+        String codigoArticulo = articulo.getCodigo();
+        if (codigoArticulo == null) {
+            codigoArticulo = articuloCodigo.getText();
+        }
+
         float stock = articulo.getStock();
 
         for (Pedido ped : lPedidos) {
-            if (ped.getCodigoArticulo().equals(articulo.getCodigo())) {
+            if (ped.getCodigoArticulo().equals(codigoArticulo)) {
                 if (modo == Modo.CLIENTE) {
                     stock -= ped.getUnidades();
                 } else {
@@ -774,52 +781,6 @@ public class FormPedido extends javax.swing.JFrame {
             }
         }
         return stock;
-    }
-    
-    
-    public void mostrarCliente(Cliente cli){
-        if (cli.getNif() != null){
-            codigoText.setText(cli.getCodigo());
-            nifnText.setText(cli.getNif());
-            apellidosText.setText(cli.getApellidos());
-            nombreText.setText(cli.getNombre());
-            domicilioText.setText(cli.getDomicilio());
-            cpText.setText(cli.getCodigoPostal());
-            localidadText.setText(cli.getLocalidad());
-            totalText.setText(String.valueOf(cli.getTotal()));
-        }
-    }
-    
-    //Muestra por pantalla el proveedor que se le pase por parametro
-    public void mostrarProveedor(Proveedor pro){
-        if (pro.getNif() != null){
-            String numeroDNI = pro.getNif().substring(0, 8);
-            codigoText.setText(pro.getCodigo());
-            nifnText.setText(pro.getNif());
-            apellidosText.setText(pro.getApellidos());
-            nombreText.setText(pro.getNombre());
-            domicilioText.setText(pro.getDomicilio());
-            cpText.setText(pro.getCodigoPostal());
-            localidadText.setText(pro.getLocalidad());
-            totalText.setText(String.valueOf(pro.getTotal()));
-        }
-    }
-    
-    //Mostrar por pantalla el codigo
-    public void mostrarArticulo(Articulo art){
-        if (art.getCodigo() != null){
-            articuloCodigo.setText(art.getCodigo());
-            descripcionText.setText(art.getDescripcion());
-            stockText.setText(String.valueOf(art.getStock()));
-           
-            if (modo==Modo.CLIENTE){
-                precioText.setText(String.valueOf(art.getPrecioVenta()));
-            } else {
-                precioText.setText(String.valueOf(art.getPrecioCompra()));
-            }          
-        } else {
-            System.out.println("Error");
-        }
     }
     
     public void resetUp(){

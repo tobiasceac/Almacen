@@ -65,6 +65,18 @@ public class JasperBase {
         jasperMethods(rutaJasper, rutaPrint);
     } 
     
-    
+    public void jFactura(Map<String, Object> parametros, String rutaJasper, String rutaPrint) throws JRException, SQLException, DataAccessException{
+        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(rutaJasper);
+        JasperPrint print = JasperFillManager.fillReport(report, parametros, conn.connectDataBase());
+        JasperExportManager.exportReportToPdfFile(print, rutaPrint);
+        File pdfFile = new File(rutaPrint);
+        if (pdfFile.exists() && Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().open(pdfFile);
+            } catch (IOException ex) {
+                System.getLogger(JasperBase.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
+    }  
     
 }

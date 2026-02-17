@@ -32,6 +32,9 @@ public class ArticuloViewModel {
    private final String rutaGrafico ="src/main/java/resources/jasper/GraficoArticulo.jasper";
    private final String rutaPrintGrafico ="src/main/java/resources/PDF/Grafico Articulo.pdf";
    
+   private final String rutaFactura = "src/main/java/resources/jasper/FacturaCliente.jasper" ;
+   private final String rutaPrintFactura = "src/main/java/resources/PDF/Factura Cliente.pdf" ;
+
    public ArticuloViewModel(){
         this.articuloDAO = new ArticuloDAO();
         this.jArticulo = new JasperBase();
@@ -94,6 +97,18 @@ public class ArticuloViewModel {
    
    public void jasperArticuloGrafico() throws JRException, SQLException, DataAccessException{
        jArticulo.jGrafico(rutaGrafico, rutaPrintGrafico);
-   }   
+   }  
+   
+      public void jasperFactura(String codigoUno, int codigoDos) throws JRException, SQLException, DataAccessException{
+       Map<String, Object> parametros = new HashMap<>();
+       
+       int cod1 = Integer.parseInt(codigoUno);
+       
+       parametros.put("CODIGO", cod1);
+       parametros.put("NUM_FACTURA", codigoDos);
+
+       
+       jArticulo.jEntreCodigos(parametros, rutaEntreCodigo, rutaPrintEntreCodigo);
+   }
    
 }
