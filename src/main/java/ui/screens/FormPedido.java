@@ -33,6 +33,7 @@ public class FormPedido extends javax.swing.JFrame {
     private ProveedorViewModel vmP = new ProveedorViewModel();
     private ArticuloViewModel vmA = new ArticuloViewModel();
     private ArrayList<Pedido> lPedidos = new ArrayList<>();
+    private Articulo articuloActual;
 
 
 
@@ -483,32 +484,27 @@ public class FormPedido extends javax.swing.JFrame {
         try{
             Pedido p = new Pedido(articuloCodigo.getText(), Integer.valueOf(unidadesText.getText()), Float.valueOf(stockText.getText()), Float.valueOf(precioText.getText()), Float.valueOf(importeText.getText()));
             
-            if ((p.getUnidades() > p.getStock()) && modo == Modo.CLIENTE){ 
+            float stockDisponible = calcularStockDisponible(articuloActual);
+            if ((p.getUnidades() > stockDisponible) && modo == Modo.CLIENTE){ 
                 throw new StockNotEnoughtException("Stock sobre pasado");
             }
 
-            if (modo==Modo.CLIENTE){
+            for (Pedido pedido : lPedidos) {
+                if (!pedido.getCodigoArticulo().equals(p.getCodigoArticulo())) {
+                    continue;
+                }
 
-
-            for (Pedido pedido : lPedidos){
-                if (pedido.getCodigoArticulo().equals(p.getCodigoArticulo())){
-                    if (pedido.getStock() < pedido.getUnidades() + p.getUnidades()) throw new StockNotEnoughtException("No hay suficiente stock disponible");
-                        pedido.setUnidades(pedido.getUnidades()+p.getUnidades());
-                        pedido.setPrecioCantidad(pedido.getPrecioCantidad()+p.getPrecioCantidad());
-                        existe = true;
+                if (modo == Modo.CLIENTE) {
+                    int unidadesTotales = pedido.getUnidades() + p.getUnidades();
+                    if (pedido.getStock() < unidadesTotales) {
+                        throw new StockNotEnoughtException("No hay suficiente stock disponible");
                     }
-                } 
-            } else {
+                }
 
-
-                for (Pedido pedido : lPedidos){
-                    if (pedido.getCodigoArticulo().equals(p.getCodigoArticulo())){                                 
-                        pedido.setUnidades(pedido.getUnidades()+p.getUnidades());
-                        pedido.setPrecioCantidad(pedido.getPrecioCantidad()+p.getPrecioCantidad());
-                        existe = true;
-                    }
-                } 
-            }   
+                pedido.setUnidades(pedido.getUnidades() + p.getUnidades());
+                pedido.setPrecioCantidad(pedido.getPrecioCantidad() + p.getPrecioCantidad());
+                existe = true;
+            }
             
             if(!existe) lPedidos.add(p);
         }  catch (StockNotEnoughtException e) {
@@ -623,26 +619,18 @@ public class FormPedido extends javax.swing.JFrame {
         if (codigoCheck(articuloCodigo.getText())){
             try {
                 Articulo articulo = vmA.consultaPorCodigo(articuloCodigo.getText());
+                articuloActual = articulo;
+                
                 descripcionText.setText(articulo.getDescripcion());
-                stockText.setText(String.valueOf(articulo.getStock()));
+                
+                float stockDisponible = calcularStockDisponible(articulo);
+                stockText.setText(String.valueOf(stockDisponible));
                 if (modo == Modo.CLIENTE){
                     precioText.setText(String.valueOf(articulo.getPrecioVenta()));
                 } else {
                     precioText.setText(String.valueOf(articulo.getPrecioCompra()));
                 }   
                 unidadesText.setEnabled(true);
-                
-                for (Pedido ped : lPedidos) {
-                    if (ped.getCodigoArticulo().equals(articulo.getCodigo())){
-                        if (modo==Modo.CLIENTE) {
-                           float realStock = articulo.getStock() - ped.getUnidades();
-                           stockText.setText(String.valueOf(realStock));
-                        } else {
-                           float realStock = articulo.getStock() + ped.getUnidades();
-                           stockText.setText(String.valueOf(realStock));
-                        }
-                    }
-                }                
                 
                 articuloCodigo.setEnabled(false);
                 CancelarPedido.setEnabled(true);
@@ -772,6 +760,22 @@ public class FormPedido extends javax.swing.JFrame {
         }
     }
     
+    private float calcularStockDisponible(Articulo articulo) {
+        if (articulo == null) return 0;
+        float stock = articulo.getStock();
+
+        for (Pedido ped : lPedidos) {
+            if (ped.getCodigoArticulo().equals(articulo.getCodigo())) {
+                if (modo == Modo.CLIENTE) {
+                    stock -= ped.getUnidades();
+                } else {
+                    stock += ped.getUnidades();
+                }
+            }
+        }
+        return stock;
+    }
+    
     
     public void mostrarCliente(Cliente cli){
         if (cli.getNif() != null){
@@ -837,6 +841,7 @@ public class FormPedido extends javax.swing.JFrame {
         precioText.setText("");
         unidadesText.setText("");
         importeText.setText("");
+        articuloActual = null;
     }
     
   
