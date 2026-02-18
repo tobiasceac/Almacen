@@ -6,31 +6,31 @@
 	<parameter name="CODIGO" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT 
-                        c.codigo as codigo_cliente,
-                        c.nombre AS nombre_cliente, 
-                        c.nif AS nif_cliente,
-                        p.codigo_pedido AS codigo_pedido, 
-                        p.fecha_pedido as fecha,
-                        a.descripcion AS articulo,
-                        p.unidades,
-                        a.precio_de_venta AS precio,
-                        (p.unidades * a.precio_de_venta) AS importe,
-                        p.num_factura AS num_factura
-                    FROM clientes c
-                    JOIN pedidos p ON c.codigo = p.codigo_cliente
-                    JOIN articulos a ON p.codigo_articulo = a.codigo
-                    WHERE p.codigo_cliente = $P{CODIGO}
-                    ORDER BY p.fecha_pedido]]>
+    c.codigo AS codigo_cliente,
+    c.nombre AS nombre_cliente,
+    c.nif AS nif_cliente,
+    r.codigo_registro AS codigo_pedido,
+    r.fecha_pedido AS fecha,
+    a.descripcion AS articulo,
+    r.unidades,
+    a.precio_venta AS precio,
+    (r.unidades::NUMERIC * a.precio_venta) AS importe,
+    r.num_factura AS num_factura
+FROM clientes c
+JOIN registros r ON c.codigo = r.codigo_cliente
+JOIN articulos a ON r.codigo_articulo = a.codigo
+WHERE r.codigo_cliente = $P{CODIGO}
+ORDER BY r.fecha_pedido]]>
 	</queryString>
 	<field name="codigo_cliente" class="java.lang.String"/>
 	<field name="nombre_cliente" class="java.lang.String"/>
 	<field name="nif_cliente" class="java.lang.String"/>
 	<field name="codigo_pedido" class="java.lang.Integer"/>
-	<field name="fecha" class="java.sql.Date"/>
+	<field name="fecha" class="java.lang.String"/>
 	<field name="articulo" class="java.lang.String"/>
-	<field name="unidades" class="java.math.BigDecimal"/>
-	<field name="precio" class="java.math.BigDecimal"/>
-	<field name="importe" class="java.math.BigDecimal"/>
+	<field name="unidades" class="java.lang.String"/>
+	<field name="precio" class="java.lang.Double"/>
+	<field name="importe" class="java.lang.Double"/>
 	<field name="num_factura" class="java.lang.Integer"/>
 	<variable name="TOTAL_FACTURA" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{importe}]]></variableExpression>

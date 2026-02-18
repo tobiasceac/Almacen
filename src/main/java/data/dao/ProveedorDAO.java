@@ -154,6 +154,31 @@ public class ProveedorDAO {
             throw new DataAccessException("Ha ocurrido un error al acceder a la BdD ", e);
         }
     }
+    
+    public void incrementarTotalCompras(String codigoProveedor, float incremento) throws ProveedorNotFoundException, DataAccessException {
+
+        if (codigoProveedor == null || codigoProveedor.isBlank()) {
+            throw new IllegalArgumentException("El código del proveedor no puede ser nulo o vacío");
+        }
+        if (incremento <= 0) {
+            throw new IllegalArgumentException("El incremento debe ser mayor que 0");
+        }
+
+        buscarPorCodigo(codigoProveedor);
+
+        String sql = "UPDATE proveedores SET total_compras = total_compras + ? WHERE codigo = ?";
+
+        try (Connection conexion = conn.connectDataBase();
+             PreparedStatement stm = conexion.prepareStatement(sql)) {
+
+            stm.setFloat(1, incremento);
+            stm.setString(2, codigoProveedor);
+            stm.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Ha ocurrido un error al acceder a la BdD ", e);
+        }
+    }
    
 }
 

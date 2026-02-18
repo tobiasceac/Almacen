@@ -108,7 +108,7 @@ public class ArticuloViewModel {
        parametros.put("NUM_FACTURA", codigoDos);
 
        
-       jArticulo.jEntreCodigos(parametros, rutaEntreCodigo, rutaPrintEntreCodigo);
+       jArticulo.jFactura(parametros, rutaFactura, rutaPrintFactura);
    }
    
 }

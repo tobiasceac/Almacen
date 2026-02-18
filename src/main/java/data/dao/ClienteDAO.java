@@ -156,5 +156,27 @@ public class ClienteDAO {
         }
     }
     
+    public void incrementarTotalVentas(String codigoCliente, float incremento) throws ClienteNotFoundException, DataAccessException {
+
+        if (codigoCliente == null || codigoCliente.isBlank()) {
+            throw new IllegalArgumentException("El código del cliente no puede ser nulo o vacío");
+        }
+
+        buscarPorCodigo(codigoCliente);
+
+        String sql = "UPDATE clientes SET total_ventas = total_ventas + ? WHERE codigo = ?";
+
+        try (Connection connection = conn.connectDataBase();
+             PreparedStatement stm = connection.prepareStatement(sql)) {
+
+            stm.setFloat(1, incremento);
+            stm.setString(2, codigoCliente);
+            stm.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Ha ocurrido un error al acceder a la BdD ", e);
+        }
+    }
+    
  
 }

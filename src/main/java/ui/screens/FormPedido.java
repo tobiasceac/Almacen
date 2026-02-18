@@ -4,6 +4,10 @@
  */
 package ui.screens;
 
+import data.dao.ArticuloDAO;
+import data.dao.ClienteDAO;
+import data.dao.ProveedorDAO;
+import data.database.ConexionDB;
 import data.model.Articulo;
 import data.model.Cliente;
 import data.model.Pedido;
@@ -14,8 +18,13 @@ import excepciones.DataAccessException;
 import excepciones.ProveedorNotFoundException;
 import excepciones.StockNotEnoughtException;
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JRException;
 import ui.viewmodel.ArticuloViewModel;
 import ui.viewmodel.ClienteViewModel;
 import ui.viewmodel.ProveedorViewModel;
@@ -34,6 +43,10 @@ public class FormPedido extends javax.swing.JFrame {
     private ArticuloViewModel vmA = new ArticuloViewModel();
     private ArrayList<Pedido> lPedidos = new ArrayList<>();
     private Articulo articuloActual;
+    private ConexionDB conn = new ConexionDB();
+    private ClienteDAO daoC = new ClienteDAO();;
+    private ArticuloDAO daoA = new ArticuloDAO();
+    private ProveedorDAO daoP = new ProveedorDAO();
 
 
 
@@ -190,6 +203,7 @@ public class FormPedido extends javax.swing.JFrame {
 
         jLabel7.setText("Localidad");
 
+        codigoText.setEnabled(false);
         codigoText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 codigoTextActionPerformed(evt);
@@ -673,7 +687,65 @@ public class FormPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_unidadesTextActionPerformed
 
     private void facturaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facturaButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+                // 1) Calcular total de la operación
+                float importeTotal = calcularImporteTotalDesdePedidos();
+
+                // 2) Actualizar totales del cliente/proveedor
+                if (modo == Modo.CLIENTE) {
+                    daoC.incrementarTotalVentas(codigoText.getText(), importeTotal);
+                } else if (modo == Modo.PROVEEDOR) {
+                    daoP.incrementarTotalCompras(codigoText.getText(), importeTotal);
+                }
+
+                // 3) Recorrer pedidos y actualizar stock + insertar registros
+                for (Pedido pedido : lPedidos) {
+                    String codigoArticulo = pedido.getCodigoArticulo();
+                    float unidades = pedido.getUnidades();
+
+                    if (modo == Modo.CLIENTE) {
+                        daoA.descontarStock(codigoArticulo, unidades);
+                        daoA.insertarPedidoCliente(codigoText.getText(), codigoArticulo, unidades);
+                    } else if (modo == Modo.PROVEEDOR) {
+                        daoA.sumarStock(codigoArticulo, unidades);
+                        daoA.insertarPedidoProveedor(codigoText.getText(), codigoArticulo, unidades);
+                    }
+                }
+
+                // 4) Jasper solo para clientes
+                if (modo == Modo.CLIENTE) {
+                    int numFactura = actualizarNumFactura(codigoText.getText());
+                    vmA.jasperFactura(codigoText.getText(), numFactura);
+                }
+
+                // 5) Limpieza final
+                resetAll();
+                lPedidos.clear();
+
+            } catch (ClienteNotFoundException ex) {
+                JOptionPane.showMessageDialog(null, "Cliente no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (ProveedorNotFoundException ex) {
+                JOptionPane.showMessageDialog(null, "Proveedor no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (DataAccessException ex) {
+                JOptionPane.showMessageDialog(null, "Ha ocurrido un error", "Error", JOptionPane.ERROR_MESSAGE);
+                System.getLogger(FormCliente.class.getName()).log(System.Logger.Level.ERROR, "DB error", ex);
+            } catch (ArticuloNotFoundException ex) {
+                codigoText.setText("");            
+                JOptionPane.showMessageDialog(
+                    null,                       
+                    ex.getMessage(),     
+                    "Error",                    
+                    JOptionPane.ERROR_MESSAGE );
+            } catch (JRException | SQLException ex) {
+                System.getLogger(FormPedido.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        resetAll();
+        lPedidos.clear();
+        allFieldEnabled(false);
+        salirButton.setEnabled(true);
+        codigoText.setEnabled(true);
+        codigoText.setEditable(true);
+        codigoText.grabFocus();
     }//GEN-LAST:event_facturaButtonActionPerformed
 
     /**
@@ -812,6 +884,59 @@ public class FormPedido extends javax.swing.JFrame {
         salirButton.setEnabled(activar);
         cancelTodoButton.setEnabled(activar);
         CancelarPedido.setEnabled(activar);
+    }
+    
+    public int actualizarNumFactura(String codigoCliente) {
+
+        String sqlSelect
+                = "SELECT COALESCE(MAX(num_factura), 0) "
+                + "FROM registros WHERE codigo_cliente = ?";
+
+        String sqlUpdate
+                = "UPDATE registros SET num_factura = ? "
+                + "WHERE codigo_cliente = ?";
+
+        try (Connection conexion = conn.connectDataBase()) {
+
+            int nuevoNumFactura;
+
+            try (PreparedStatement psSelect = conexion.prepareStatement(sqlSelect)) {
+
+                psSelect.setString(1, codigoCliente);
+
+                try (ResultSet rs = psSelect.executeQuery()) {
+                    rs.next();
+                    nuevoNumFactura = rs.getInt(1) + 1;
+                }
+            }
+
+            try (PreparedStatement psUpdate = conexion.prepareStatement(sqlUpdate)) {
+
+                psUpdate.setInt(1, nuevoNumFactura);
+                psUpdate.setString(2, codigoCliente);
+
+                int filas = psUpdate.executeUpdate();
+
+                if (filas == 0) {
+                    return -1; // No hay pedidos pendientes
+                }
+            }
+
+            return nuevoNumFactura;
+
+        } catch (SQLException | DataAccessException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+    
+     
+    private float calcularImporteTotalDesdePedidos() {
+        float total = 0f;
+        for (Pedido pedido : lPedidos) {
+            total += pedido.getPrecioCantidad();
+        }
+        return total;
     }
 
 
